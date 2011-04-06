@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/activation-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/ext-1.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/java-getopt-1.0.12.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/javamail-1.3.2.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/jep-2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/jsch-0.1.24.jar" sourcepath="C:/temp/jsch-0.1.28/jsch-0.1.28/src"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/jsr173_1.0_api.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/junit.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/ostermillerutils_1_05_00_for_java_1_4.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/resolver.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/saxon8.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/saxon8-dom.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/saxon8-xpath.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/xalan-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/xbean.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/xbean_xpath.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/xercesImpl-2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/xmlpublic.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/pipelineBuild.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/commons-email-20030310.165926.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/jfreechart-1.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/jcommon-1.0.6.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/saaj-1.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/pipelineWorkFlow.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/XNATTools"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/pipelineCatalog.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xnat_pipeline_v2"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/pipelineBase.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/axis-1_3.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/jaxrpc-1.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/ij-1.39b.jar" sourcepath="C:/ImageJ/ij139b-src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/com.noelios.restlet-1.1rc1.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/org.restlet-1.1rc1.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/pipelineCNDAXNAT.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/pipelineXNAT.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/PlexiViewer-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/drmaa.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/xdat_release_cnda_live/plugin-resources/repository/xdat/jars/xdat-beans-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/commons-collections-3.2.1.jar" sourcepath="C:/Documents and Settings/mohanar/My Documents/Downloads/commons-collections-3.2.1-bin/commons-collections-3.2.1/commons-collections-3.2.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/DATA/pipeline_cnda_beta/pipeline/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
