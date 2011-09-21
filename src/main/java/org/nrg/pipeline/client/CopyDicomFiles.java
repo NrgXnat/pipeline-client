@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
 import org.nrg.pipeline.xmlreader.XmlReader;
@@ -29,6 +30,7 @@ import org.nrg.xdat.bean.XnatImagesessiondataBean;
 import org.nrg.xdat.bean.XnatResourceBean;
 import org.nrg.xdat.bean.XnatResourcecatalogBean;
 import org.nrg.xdat.bean.XnatResourceseriesBean;
+import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xnattools.xml.XMLSearch;
 
 public class CopyDicomFiles {
@@ -116,7 +118,7 @@ public class CopyDicomFiles {
     	XnatAbstractresourceBean file = null;
     	String scanType = imagescan.getType();
     	String rawScanContentCode = scanType + "_RAW";
-    	ArrayList <XnatAbstractresourceBean> files = imagescan.getFile();
+    	List <XnatAbstractresourceBean> files = imagescan.getFile();
     	if (files.size() > 0) {
 	    	if (files.size() == 1) {
 	        	file = files.get(0);
@@ -133,7 +135,7 @@ public class CopyDicomFiles {
     	XnatAbstractresourceBean rtn = null;
     	try {
 				for (int i = 0; i < imageScan.getFile().size(); i++) {
-					XnatAbstractresourceBean f = imageScan.getFile().get(i);
+					XnatAbstractresourceI f = imageScan.getFile().get(i);
 				    if (f instanceof XnatResourceBean) {
 				    	XnatResourceBean resource = (XnatResourceBean)f;
 				    	if (resource.getContent().equals(content)) {
@@ -177,7 +179,7 @@ public class CopyDicomFiles {
        try {
            XnatImagesessiondataBean imageSession = getImageSessionFromHost();
            boolean found = false;
-           ArrayList<XnatImagescandataBean> imageScans = imageSession.getScans_scan(); 
+           List<XnatImagescandataBean> imageScans = imageSession.getScans_scan(); 
            if (imageScans != null && imageScans.size() > 0) {
                for (int i = 0; i < imageScans.size(); i++) {
                    XnatImagescandataBean mrscan = imageScans.get(i); 
@@ -189,7 +191,7 @@ public class CopyDicomFiles {
                                String catalogPath = catalog.getUri();
                                if (catalogPath.endsWith("/")) catalogPath = catalogPath.substring(0,catalogPath.length()-1);
                                CatDcmcatalogBean dcmCatalogBean =  (CatDcmcatalogBean)new XmlReader().getBeanFromXml(catalogPath, false);
-                               ArrayList<CatEntryBean>  catalogEntries = dcmCatalogBean.getEntries_entry();
+                               List<CatEntryBean>  catalogEntries = dcmCatalogBean.getEntries_entry();
                                int lastIndexOfSlash = catalogPath.lastIndexOf("/");
                                if (lastIndexOfSlash != -1) catalogPath = catalogPath.substring(0,lastIndexOfSlash);
                                if (catalogEntries.size() > 0) {
@@ -200,7 +202,7 @@ public class CopyDicomFiles {
                                }
                            }else {
                                    XnatDicomseriesBean dicoms = (XnatDicomseriesBean)file;
-                                   ArrayList<XnatDicomseriesImageBean>  imageSet = dicoms.getImageset_image();
+                                   List<XnatDicomseriesImageBean>  imageSet = dicoms.getImageset_image();
                                    for (int k = 0; k < imageSet.size(); k++) {
                                        String uri = imageSet.get(k).getUri();
                                        copyFile(uri);
