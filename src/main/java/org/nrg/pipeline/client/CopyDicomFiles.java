@@ -14,7 +14,6 @@ import gnu.getopt.LongOpt;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
@@ -139,31 +138,31 @@ public class CopyDicomFiles {
 				    if (f instanceof XnatResourceBean) {
 				    	XnatResourceBean resource = (XnatResourceBean)f;
 				    	if (resource.getContent().equals(content)) {
-				    		rtn = f;
+				    		rtn = resource;
 				    		break;
 				    	}
 				    }else if (f instanceof XnatImageresourceBean) {
 				    	XnatImageresourceBean imageResource = (XnatImageresourceBean)f;
 				    	if (imageResource.getContent().equals(content)) {
-				    		rtn = f;
+				    		rtn = imageResource;
 				    		break;
 				    	}
 				    }else if (f instanceof XnatResourceseriesBean) {
 				    	XnatResourceseriesBean resourceSeries = (XnatResourceseriesBean)f;
 				    	if (resourceSeries.getContent().equals(content)) {
-				    		rtn = f;
+				    		rtn = resourceSeries;
 				    		break;
 				    	}
 				    }else if (f instanceof XnatDicomseriesBean) {
 				    	XnatDicomseriesBean resourceSeries = (XnatDicomseriesBean)f;
 				    	if (resourceSeries.getContent().equals(content)) {
-				    		rtn = f;
+				    		rtn = resourceSeries;
 				    		break;
 				    	}
 				    }else if (f instanceof XnatResourcecatalogBean) {
 				    	XnatResourcecatalogBean resourceCat = (XnatResourcecatalogBean)f;
 				    	if (resourceCat.getContent().equals(content)) {
-				    		rtn = f;
+				    		rtn = resourceCat;
 				    		break;
 				    	}
 				    }
