@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.nrg</groupId>
 			<artifactId>plexiviewer</artifactId>
-			<version>1.4</version>
+			<version>1.4.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- NRG/XDAT/XNAT libraries. If these don't resolve, check the repository settings. -->
