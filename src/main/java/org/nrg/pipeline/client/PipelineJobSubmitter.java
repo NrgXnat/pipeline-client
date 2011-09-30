@@ -56,7 +56,8 @@ public class PipelineJobSubmitter {
         }
 	}
 	
-	private void setEnvironment(JobTemplate jt, PipelineResourceRequirements pipelineRes) throws DrmaaException, PipelineException {
+	@SuppressWarnings("rawtypes")
+    private void setEnvironment(JobTemplate jt, PipelineResourceRequirements pipelineRes) throws DrmaaException, PipelineException {
 	        	Map jobEnvironment = jt.getJobEnvironment();
 	        	if (jobEnvironment == null) {
 	        		jobEnvironment = new Hashtable();
@@ -133,11 +134,10 @@ public class PipelineJobSubmitter {
 			         
 			         
 			         //Update the workflow table to insert the grid job id
-			         CommandLineArguments commandArgs = new CommandLineArguments(unescapedJobArgs);
 			         if (aliasHost != null)
-					      new XNATPipelineLauncher(commandArgs).assignGridJobIdToWorkflow(id, aliasHost);
+					      new XNATPipelineLauncher(unescapedJobArgs).assignGridJobIdToWorkflow(id, aliasHost);
 		        	 else
-		        		 new XNATPipelineLauncher(commandArgs).assignGridJobIdToWorkflow(id);
+		        		 new XNATPipelineLauncher(unescapedJobArgs).assignGridJobIdToWorkflow(id);
 			         
 			         System.out.println("Releasing the hold on  Job " + id);
 			         System.out.print("Scheduling Command: " + command + " ");
@@ -228,14 +228,6 @@ public class PipelineJobSubmitter {
          }
          return rtn;
     }
-	
-	private String getCommandName() {
-		int i = command.lastIndexOf(File.separator);
-		if (i != -1) {
-			return command.substring(i+1);
-		}else
-		   return command;
-	}
 	
 	public void showUsage() {
 		System.out.println("PURPOSE: This java based utility will post jobs on the DRMAA API compliant grid ");

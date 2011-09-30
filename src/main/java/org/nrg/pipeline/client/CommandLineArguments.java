@@ -12,24 +12,22 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Properties;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.utils.XMLBeansUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
-import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParameterData.Values;
+import org.nrg.pipeline.xmlbeans.ParametersDocument;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.pipeline.xmlbeans.workflow.XnatExecutionEnvironment;
 import org.nrg.pipeline.xmlreader.XmlReader;
 
 import com.Ostermiller.util.CSVParser;
-
 
 public class CommandLineArguments extends AbsVersion {
 
@@ -57,45 +55,52 @@ public class CommandLineArguments extends AbsVersion {
     }
 
     /**
-     * @return Returns the isRecon.
+     * Indicates whether workflow entries should be recorded for the current pipeline.
+     * @return <b>true</b> (the default) if workflow entries should be recorded, <b>false</b> otherwise.
      */
-    //public boolean isRecon() {
-    //    return isRecon;
-   // }
+    public boolean recordWorkflow() {
+        return recordWorkflow;
+    }
 
+    public void setRecordWorkflow(boolean recordWorkflow) {
+        this.recordWorkflow = recordWorkflow;
+    }
+    
     public CommandLineArguments(String argv[]) {
         int c;
-        commandLineArgs = new Hashtable();
+        commandLineArgs = new Hashtable<String, Object>();
         execEnv = XnatExecutionEnvironment.Factory.newInstance();
         params = ParametersDocument.Parameters.Factory.newInstance();
         hasParamFile = false;
         paramsFromFileDoc = null;
-        LongOpt[] longopts = new LongOpt[22];
-        longopts[0] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
-        longopts[1] = new LongOpt("pipeline", LongOpt.REQUIRED_ARGUMENT, null, 'p'); 
-        longopts[2] = new LongOpt("parameter", LongOpt.REQUIRED_ARGUMENT, null, 'r');
-        longopts[3] = new LongOpt("parameterFile", LongOpt.REQUIRED_ARGUMENT, null, 'm');
-        longopts[4] = new LongOpt("startAt", LongOpt.REQUIRED_ARGUMENT, null, 's');
-        longopts[5] = new LongOpt("notify", LongOpt.REQUIRED_ARGUMENT, null, 'e');
-        longopts[6] = new LongOpt("dataType", LongOpt.REQUIRED_ARGUMENT, null, 'd');
-        longopts[7] = new LongOpt("id", LongOpt.REQUIRED_ARGUMENT, null, 'i');
-        longopts[8] = new LongOpt("debug", LongOpt.NO_ARGUMENT, null, 'g');
-        longopts[9] = new LongOpt("u", LongOpt.REQUIRED_ARGUMENT, null, 'y');
-        longopts[10] = new LongOpt("pwd", LongOpt.REQUIRED_ARGUMENT, null, 'w');
-        longopts[11] = new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'o');
-        longopts[12] = new LongOpt("supressNotification", LongOpt.NO_ARGUMENT, null, 'n');
-        longopts[13] = new LongOpt("log", LongOpt.REQUIRED_ARGUMENT, null, 'l');
-        longopts[14] = new LongOpt("catalogPath", LongOpt.REQUIRED_ARGUMENT, null, 'c');
-        longopts[15] = new LongOpt("config", LongOpt.REQUIRED_ARGUMENT, null, 'f');
-        longopts[16] = new LongOpt("version", LongOpt.NO_ARGUMENT, null, 'v');
-        longopts[17] = new LongOpt("project", LongOpt.REQUIRED_ARGUMENT, null, 't');        
-        longopts[18] = new LongOpt("aliasHost", LongOpt.REQUIRED_ARGUMENT, null, 'a');
-        longopts[19] = new LongOpt("label", LongOpt.REQUIRED_ARGUMENT, null, 'b');
-        longopts[20] = new LongOpt("useAlias", LongOpt.NO_ARGUMENT, null, 'z');
-        longopts[21] = new LongOpt("notifyonlyadmin", LongOpt.NO_ARGUMENT, null, 'j');
-                     
+
+        List<LongOpt> longopts = new ArrayList<LongOpt>();
+        longopts.add(new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h'));
+        longopts.add(new LongOpt("pipeline", LongOpt.REQUIRED_ARGUMENT, null, 'p')); 
+        longopts.add(new LongOpt("parameter", LongOpt.REQUIRED_ARGUMENT, null, 'r'));
+        longopts.add(new LongOpt("parameterFile", LongOpt.REQUIRED_ARGUMENT, null, 'm'));
+        longopts.add(new LongOpt("startAt", LongOpt.REQUIRED_ARGUMENT, null, 's'));
+        longopts.add(new LongOpt("notify", LongOpt.REQUIRED_ARGUMENT, null, 'e'));
+        longopts.add(new LongOpt("dataType", LongOpt.REQUIRED_ARGUMENT, null, 'd'));
+        longopts.add(new LongOpt("id", LongOpt.REQUIRED_ARGUMENT, null, 'i'));
+        longopts.add(new LongOpt("debug", LongOpt.NO_ARGUMENT, null, 'g'));
+        longopts.add(new LongOpt("u", LongOpt.REQUIRED_ARGUMENT, null, 'y'));
+        longopts.add(new LongOpt("pwd", LongOpt.REQUIRED_ARGUMENT, null, 'w'));
+        longopts.add(new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'o'));
+        longopts.add(new LongOpt("supressNotification", LongOpt.NO_ARGUMENT, null, 'n'));
+        longopts.add(new LongOpt("log", LongOpt.REQUIRED_ARGUMENT, null, 'l'));
+        longopts.add(new LongOpt("catalogPath", LongOpt.REQUIRED_ARGUMENT, null, 'c'));
+        longopts.add(new LongOpt("config", LongOpt.REQUIRED_ARGUMENT, null, 'f'));
+        longopts.add(new LongOpt("version", LongOpt.NO_ARGUMENT, null, 'v'));
+        longopts.add(new LongOpt("project", LongOpt.REQUIRED_ARGUMENT, null, 't'));        
+        longopts.add(new LongOpt("aliasHost", LongOpt.REQUIRED_ARGUMENT, null, 'a'));
+        longopts.add(new LongOpt("label", LongOpt.REQUIRED_ARGUMENT, null, 'b'));
+        longopts.add(new LongOpt("useAlias", LongOpt.NO_ARGUMENT, null, 'z'));
+        longopts.add(new LongOpt("notifyonlyadmin", LongOpt.NO_ARGUMENT, null, 'j'));
+        longopts.add(new LongOpt("recordWorkflow", LongOpt.OPTIONAL_ARGUMENT, null, 'x'));
+
         // 
-        Getopt g = new Getopt("XNATPipelineLauncher", argv, "p:r:m:s:e:d:i:y:w:o:l:c:f:t:a:b:zjghnv;", longopts, true);
+        Getopt g = new Getopt("XNATPipelineLauncher", argv, "p:r:m:s:e:d:i:y:w:o:l:c:f:t:a:b:zjghnvx;", longopts.toArray(new LongOpt[] {}), true);
         g.setOpterr(false); // We'll do our own error handling
         //
         while ((c = g.getopt()) != -1) {
@@ -179,7 +184,7 @@ public class CommandLineArguments extends AbsVersion {
                    noOfRequiredArgumentsAvailable++;
                    break;
                case 'g':
-                   commandLineArgs.put("debug",new Boolean(true));
+                   commandLineArgs.put("debug", Boolean.TRUE.toString());
                    break;
                case 'h':
                  printUsage();
@@ -206,6 +211,9 @@ public class CommandLineArguments extends AbsVersion {
                case 'v':
                    echoVersion();
                    System.exit(0);
+               case 'x':
+                   recordWorkflow = Boolean.parseBoolean(g.getOptarg());
+            	   break;
                default:
                  echoVersion();  
                  printUsage();
@@ -220,120 +228,18 @@ public class CommandLineArguments extends AbsVersion {
         execEnv.setSupressNotification(supressNotification);
     }
     
-    
-    
     public XnatExecutionEnvironment getExecutionEnvironment() {
         return execEnv;
     }
     
-    
-
-    
-    private void addParameter(String paramValuePair, boolean sensitive) {
-        //expected to get <name>=<csv value>
-        paramValuePair = paramValuePair.trim();
-        if (!sensitive) System.out.println("Param Value Pair " + paramValuePair);
-        String parts[] = paramValuePair.split("=");
-        if (parts == null || parts.length < 2  ) {
-            System.out.println("Invalid parameter found: " + paramValuePair);
-            printUsage();
-            System.exit(1);
-        }
-        String paramName = parts[0].trim();
-        String paramValues = parts[1].trim();
-        if (sensitive) System.out.println("Param Value Pair " + paramName + "=********");
-
-        if (!paramName.equals("u") && !paramName.equals("pwd") && !paramName.equals("host")) {
-            XnatExecutionEnvironment.Parameters  execParams = execEnv.getParameters();
-            if (!execEnv.isSetParameters()) {
-                execParams = execEnv.addNewParameters();
-            }
-            XnatExecutionEnvironment.Parameters.Parameter execParam =  execParams.addNewParameter();
-            execParam.setName(paramName);
-            execParam.setStringValue(paramValues);
-        }
-        ParameterData pData = params.addNewParameter();
-        pData.setName(paramName);
-        Values values = pData.getValues();
-        if (values == null) values = pData.addNewValues();
-        String[][] str = CSVParser.parse(paramValues);
-        if (str==null || str.length != 1) {
-            System.out.println("Invalid parameter found: " + paramValuePair);
-            System.out.println("NOTE: If a parameter includes a comma or a new line, the whole field must be surrounded with double quotes.");
-            System.out.println("When the field is in quotes, any quote literals must be escaped by \" Backslash literals must be escaped by \\"); 
-            System.out.println("Otherwise a backslash and the character following will be treated as the following character, IE. \"\n\" is equivalent to \"n\".");
-            System.out.println("Text that comes after quotes that have been closed but come before the next comma will be ignored.");
-            printUsage();
-            System.exit(1);
-        }
-        if (str[0].length == 1) {
-            values.setUnique(str[0][0]);
-        }else {
-            for (int i = 0; i < str[0].length; i++) {
-                values.addList(str[0][i]);
-            }
-        }
-        
-        //parts = paramValues.split(",");
-        //if (parts == null) {
-        //    System.out.println("Invalid parameter found: " + paramValuePair);
-        //    printUsage();
-        //   System.exit(1);
-        //}
-        
-/*        if (parts.length == 1) {
-            values.setUnique(parts[0]);
-        }else {
-            for (int i = 0; i < parts.length; i++) {
-                values.addList(parts[i]);
-            }
-        }
-*/    }
-    
-    private void readParameterDocument(String path){
-        try {
-            paramsFromFileDoc = (ParametersDocument)new XmlReader().read(path, false);
-             String err = XMLBeansUtils.validateAndGetErrors(paramsFromFileDoc);
-             if (err != null) {
-                 throw new XmlException("Invalid XML " + path + "\n" + err);
-             }
-
-            Parameters paramsFromFile = paramsFromFileDoc.getParameters();
-            XnatExecutionEnvironment.ParameterFile  execParamFile = execEnv.getParameterFile();
-            if (!execEnv.isSetParameterFile()) {
-                execParamFile = execEnv.addNewParameterFile();
-            }
-            execParamFile.setPath(path);
-            execParamFile.setXml("<![CDATA[" + 
-paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>");
-/*            for (int i = 0; i < paramsFromFile.sizeOfParameterArray(); i++) {
-                XnatExecutionEnvironment.Parameters.Parameter execParam =  execParams.addNewParameter();
-                execParam.setName(paramsFromFile.getParameterArray(i).getName());
-                String paramValues = "";
-                Values values =  paramsFromFile.getParameterArray(i).getValues();
-                if (values.isSetUnique()) {
-                    execParam.setStringValue(values.getUnique());
-                }else {
-                    for (int j =0; j < values.sizeOfListArray(); j++) {
-                        paramValues += values.getListArray(j) + ",";
-                    }
-                    if (paramValues.endsWith(",")) {
-                        paramValues.substring(0,paramValues.length()-1);
-                    }
-                    execParam.setStringValue(paramValues);
-                }
-            }
-*/        }catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
+    @SuppressWarnings("unchecked")
     public void addEmail(String emailId) {
         if (commandLineArgs.containsKey("notify")) {
-            ((ArrayList)commandLineArgs.get("notify")).add(emailId);
-        }else {
-            ArrayList emails = new ArrayList(); emails.add(emailId);
-            commandLineArgs.put("notify",emails);
+            ((ArrayList<String>) commandLineArgs.get("notify")).add(emailId);
+        } else {
+            ArrayList<String> emails = new ArrayList<String>();
+            emails.add(emailId);
+            commandLineArgs.put("notify", emails);
         }
     }
     
@@ -497,7 +403,6 @@ paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>
         return (String)commandLineArgs.get("password");
     }
 
-
     /**
      * @return Returns the userName.
      */
@@ -505,26 +410,121 @@ paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>
         return (String)commandLineArgs.get("username");
     }
     
-    public ArrayList getEmailIds() {
-        return ((ArrayList)commandLineArgs.get("notify"));
+    @SuppressWarnings("unchecked")
+    public ArrayList<String> getEmailIds() {
+        return ((ArrayList<String>) commandLineArgs.get("notify"));
     }
     
     public String getLogPropertiesFile() {
         return (String)commandLineArgs.get("log");
     }
     
+    private void addParameter(String paramValuePair, boolean sensitive) {
+        //expected to get <name>=<csv value>
+        paramValuePair = paramValuePair.trim();
+        if (!sensitive) System.out.println("Param Value Pair " + paramValuePair);
+        String parts[] = paramValuePair.split("=");
+        if (parts == null || parts.length < 2  ) {
+            System.out.println("Invalid parameter found: " + paramValuePair);
+            printUsage();
+            System.exit(1);
+        }
+        String paramName = parts[0].trim();
+        String paramValues = parts[1].trim();
+        if (sensitive) System.out.println("Param Value Pair " + paramName + "=********");
 
+        if (!paramName.equals("u") && !paramName.equals("pwd") && !paramName.equals("host")) {
+            XnatExecutionEnvironment.Parameters  execParams = execEnv.getParameters();
+            if (!execEnv.isSetParameters()) {
+                execParams = execEnv.addNewParameters();
+            }
+            XnatExecutionEnvironment.Parameters.Parameter execParam =  execParams.addNewParameter();
+            execParam.setName(paramName);
+            execParam.setStringValue(paramValues);
+        }
+        ParameterData pData = params.addNewParameter();
+        pData.setName(paramName);
+        Values values = pData.getValues();
+        if (values == null) values = pData.addNewValues();
+        String[][] str = CSVParser.parse(paramValues);
+        if (str==null || str.length != 1) {
+            System.out.println("Invalid parameter found: " + paramValuePair);
+            System.out.println("NOTE: If a parameter includes a comma or a new line, the whole field must be surrounded with double quotes.");
+            System.out.println("When the field is in quotes, any quote literals must be escaped by \" Backslash literals must be escaped by \\"); 
+            System.out.println("Otherwise a backslash and the character following will be treated as the following character, IE. \"\n\" is equivalent to \"n\".");
+            System.out.println("Text that comes after quotes that have been closed but come before the next comma will be ignored.");
+            printUsage();
+            System.exit(1);
+        }
+        if (str[0].length == 1) {
+            values.setUnique(str[0][0]);
+        }else {
+            for (int i = 0; i < str[0].length; i++) {
+                values.addList(str[0][i]);
+            }
+        }
+        
+        //parts = paramValues.split(",");
+        //if (parts == null) {
+        //    System.out.println("Invalid parameter found: " + paramValuePair);
+        //    printUsage();
+        //   System.exit(1);
+        //}
+        
+/*        if (parts.length == 1) {
+            values.setUnique(parts[0]);
+        }else {
+            for (int i = 0; i < parts.length; i++) {
+                values.addList(parts[i]);
+            }
+        }
+*/    }
+    
+    private void readParameterDocument(String path){
+        try {
+            paramsFromFileDoc = (ParametersDocument)new XmlReader().read(path, false);
+             String err = XMLBeansUtils.validateAndGetErrors(paramsFromFileDoc);
+             if (err != null) {
+                 throw new XmlException("Invalid XML " + path + "\n" + err);
+             }
+
+            XnatExecutionEnvironment.ParameterFile  execParamFile = execEnv.getParameterFile();
+            if (!execEnv.isSetParameterFile()) {
+                execParamFile = execEnv.addNewParameterFile();
+            }
+            execParamFile.setPath(path);
+            execParamFile.setXml("<![CDATA[" + paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>");
+/*            for (int i = 0; i < paramsFromFile.sizeOfParameterArray(); i++) {
+                XnatExecutionEnvironment.Parameters.Parameter execParam =  execParams.addNewParameter();
+                execParam.setName(paramsFromFile.getParameterArray(i).getName());
+                String paramValues = "";
+                Values values =  paramsFromFile.getParameterArray(i).getValues();
+                if (values.isSetUnique()) {
+                    execParam.setStringValue(values.getUnique());
+                }else {
+                    for (int j =0; j < values.sizeOfListArray(); j++) {
+                        paramValues += values.getListArray(j) + ",";
+                    }
+                    if (paramValues.endsWith(",")) {
+                        paramValues.substring(0,paramValues.length()-1);
+                    }
+                    execParam.setStringValue(paramValues);
+                }
+            }
+*/        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     //boolean isRecon = false;
-    XnatExecutionEnvironment execEnv;
-    Hashtable commandLineArgs;
-    Parameters params;
-    ParametersDocument paramsFromFileDoc;
-    boolean supressNotification = false;
-    
-    boolean notifyonlyadmin = false;
-    
-    
-    boolean hasParamFile = false;
-    int noOfRequiredArguments = 7;
-    int noOfRequiredArgumentsAvailable = 0;
+    private XnatExecutionEnvironment execEnv;
+    private Map<String, Object> commandLineArgs;
+    private Parameters params;
+    private ParametersDocument paramsFromFileDoc;
+    private boolean supressNotification = false;
+    private boolean notifyonlyadmin = false;
+    private boolean hasParamFile = false;
+    private boolean recordWorkflow = true;
+    private int noOfRequiredArguments = 7;
+    private int noOfRequiredArgumentsAvailable = 0;
 }
