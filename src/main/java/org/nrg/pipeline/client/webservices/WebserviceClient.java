@@ -10,9 +10,11 @@ package org.nrg.pipeline.client.webservices;
 
 import org.nrg.xnattools.service.WebServiceClient;
 
+import java.net.MalformedURLException;
+
 public class WebserviceClient  {
 	
-	public static String CONNET_GET(String host, String uri, String uname, String passwd) {
+	public static String CONNET_GET(String host, String uri, String uname, String passwd) throws MalformedURLException {
 		WebServiceClient client = new WebServiceClient(host, uname, passwd);
 		String rtn = "";
 		try {
