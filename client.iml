@@ -18,6 +18,21 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.noelios.restlet:com.noelios.restlet:1.1-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet:org.restlet:1.1-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.nrg.xnat.pipeline:tools:1.6.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.nrg:pipelineCNDAXNAT:1.0" level="project" />
+    <orderEntry type="library" name="Maven: imagej:imagej:1.44.update" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.regexp:com.springsource.org.apache.regexp:1.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.xml:com.springsource.org.apache.xml.resolver:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.xmlcommons:com.springsource.org.apache.xmlcommons:1.3.4" level="project" />
+    <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.44-1" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.saxon:saxon:9.1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: xalan:serializer:2.7.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:com.springsource.org.apache.commons.logging:1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:com.springsource.org.apache.commons.httpclient:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: edu.ucar:netcdf:4.2" level="project" />
+    <orderEntry type="library" name="Maven: jfree:jcommon:1.0.15" level="project" />
     <orderEntry type="module" module-name="xnat_tools" />
     <orderEntry type="library" name="Maven: org.nrg:pipelineXNAT:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.nrg.xdat:beans:1.0" level="project" />
@@ -73,7 +88,7 @@
     <orderEntry type="library" name="Maven: avalon-framework:avalon-framework:4.1.4" level="project" />
     <orderEntry type="library" name="Maven: org.dspace:jargon:1.4.25" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20090211" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:1.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.3" level="project" />
     <orderEntry type="library" name="Maven: org.nrg:pipelineProv:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.nrg:pipelineWorkflow:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.nrg:pipelineCNDAXNAT:1.0" level="project" />
