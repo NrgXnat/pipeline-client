@@ -11,12 +11,12 @@ package org.nrg.pipeline.drmaa.client;
 import java.util.Map;
 
 import org.nrg.pipeline.client.CommandLineArguments;
-import org.nrg.pipeline.exception.PipelineException;
-import org.nrg.pipeline.utils.PipelineUtils;
+import org.nrg.pipeline.exception.PipelineEngineException;
+import org.nrg.pipeline.utils.PipelineEngineUtils;
 import org.nrg.pipeline.xmlbeans.PipelineData;
-import org.nrg.pipeline.xmlbeans.PipelineData.ResourceRequirements.Property;
 import org.nrg.pipeline.xmlbeans.PipelineDocument;
 import org.nrg.pipeline.xmlbeans.PipelineData.ResourceRequirements;
+import org.nrg.pipeline.xmlbeans.PipelineData.ResourceRequirements.Property;
 
 public class PipelineResourceRequirements  {
 	
@@ -30,11 +30,11 @@ public class PipelineResourceRequirements  {
 		this.jobArgs = jobArgs;
 	}
 	
-	public void load() throws PipelineException {
+	public void load() throws PipelineEngineException {
 		if (jobArgs != null && jobArgs.length > 0) {
 	    	 CommandLineArguments cmdArgs = new CommandLineArguments(jobArgs);
 	       	 String pathToPipelineXml = cmdArgs.getPipelineFullPath();
-	       	PipelineDocument pipelineDoc = PipelineUtils.getPipelineDocument(pathToPipelineXml);
+	       	PipelineDocument pipelineDoc = PipelineEngineUtils.getPipelineDocument(pathToPipelineXml);
 	       	PipelineData pipelineData = pipelineDoc.getPipeline();
 	       	if (pipelineData.isSetResourceRequirements()) {
 	       		ResourceRequirements resourceReq = pipelineData.getResourceRequirements();

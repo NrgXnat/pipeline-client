@@ -18,6 +18,7 @@ import org.ggf.drmaa.JobTemplate;
 import org.ggf.drmaa.Session;
 import org.ggf.drmaa.SessionFactory;
 import org.nrg.pipeline.drmaa.client.PipelineResourceRequirements;
+import org.nrg.pipeline.exception.PipelineEngineException;
 import org.nrg.pipeline.exception.PipelineException;
 
 public class PipelineJobSubmitter {
@@ -47,7 +48,7 @@ public class PipelineJobSubmitter {
 		return rtn;	
 	}
 	
-	private void setupJob(JobTemplate jt) throws DrmaaException, PipelineException{
+	private void setupJob(JobTemplate jt) throws DrmaaException, PipelineEngineException{
         if (isXnatPipelineLauncher()) {
 				PipelineResourceRequirements pipelineRes = new PipelineResourceRequirements(unescapedJobArgs);
 				pipelineRes.load();
@@ -57,7 +58,7 @@ public class PipelineJobSubmitter {
 	}
 	
 	@SuppressWarnings("rawtypes")
-    private void setEnvironment(JobTemplate jt, PipelineResourceRequirements pipelineRes) throws DrmaaException, PipelineException {
+    private void setEnvironment(JobTemplate jt, PipelineResourceRequirements pipelineRes) throws DrmaaException, PipelineEngineException {
 	        	Map jobEnvironment = jt.getJobEnvironment();
 	        	if (jobEnvironment == null) {
 	        		jobEnvironment = new Hashtable();
@@ -66,7 +67,7 @@ public class PipelineJobSubmitter {
 	        	jt.setJobEnvironment(jobEnvironment);
      }
 	
-	private void setResourceRequirements(JobTemplate jt, PipelineResourceRequirements pipelineRes) throws DrmaaException, PipelineException {
+	private void setResourceRequirements(JobTemplate jt, PipelineResourceRequirements pipelineRes) throws DrmaaException, PipelineEngineException {
 	        	String resourceReq = jt.getNativeSpecification();
 	        	String pipelineResourceReq = pipelineRes.getResourceRequirements();
 	        	String qsub_options = "  -shell y ";
@@ -152,7 +153,7 @@ public class PipelineJobSubmitter {
 		         status = 0;
 		      } catch (DrmaaException e) {
 		         System.out.println ("DRMAA Error: " + e.getClass() + " " + e.getMessage());
-		      }catch (PipelineException pe) {
+		      }catch (PipelineEngineException pe) {
 		         System.out.println ("Error: Possibly couldnt read the pipeline for resource requirements " + pe.getLocalizedMessage());
 		      }finally {
 			         // Cleanup after run
