@@ -22,6 +22,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.nrg.pipeline.client.utils.FileUtils;
+import org.nrg.pipeline.exception.PipelineEngineException;
 import org.nrg.pipeline.exception.PipelineException;
 import org.nrg.pipeline.process.LocalProcessLauncher;
 import org.nrg.pipeline.utils.CommandStatementPresenter;
@@ -149,7 +150,7 @@ public class LnList {
     	return FileUtils.getRelativePath(mrSessionDoc);
     }
 	
-	private ArrayList getValuesForParameter() throws PipelineException{
+	private ArrayList getValuesForParameter() throws PipelineEngineException{
 		ArrayList rtn = new ArrayList();
 		String parameterFile = commandLineArgs.get("parameter-file");
 		try {
@@ -175,14 +176,14 @@ public class LnList {
 	            }
 		}catch(IOException ioe) {
 	            logger.error("File not found " + parameterFile);
-	            throw new PipelineException(ioe.getClass() + "==>" + ioe.getLocalizedMessage(), ioe);
+	            throw new PipelineEngineException(ioe.getClass() + "==>" + ioe.getLocalizedMessage(), ioe);
 	        }catch (XmlException xmle ) {
 	            logger.error(xmle.getLocalizedMessage());
-	            throw new PipelineException(xmle.getClass() + "==>" + xmle.getLocalizedMessage(),xmle);
+	            throw new PipelineEngineException(xmle.getClass() + "==>" + xmle.getLocalizedMessage(),xmle);
 	        }catch(PipelineException ane) {
 	            ane.printStackTrace();
 	            logger.error(ane.getLocalizedMessage());
-	            throw new PipelineException(ane.getClass() + "==>" + ane.getLocalizedMessage(),ane);
+	            throw new PipelineEngineException(ane.getClass() + "==>" + ane.getLocalizedMessage(),ane);
 	        }
 	        return rtn;
 	}

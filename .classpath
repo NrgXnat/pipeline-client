@@ -6,6 +6,7 @@
 	<classpathentry kind="src" output="target/test-classes" path="src/test/resources"/>
 	<classpathentry exported="true" kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/XNATTools"/>
+	<classpathentry kind="lib" path="D:/MERCURIAL/MOHANA/HCP/intradb_pipeline_1_6dev/lib/pipelineXNAT.jar"/>
+	<classpathentry kind="lib" path="D:/MERCURIAL/MOHANA/HCP/intradb_pipeline_1_6dev/lib/xnat_tools-1.6.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
