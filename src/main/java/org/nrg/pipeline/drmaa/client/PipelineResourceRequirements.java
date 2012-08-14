@@ -14,9 +14,9 @@ import org.nrg.pipeline.client.CommandLineArguments;
 import org.nrg.pipeline.exception.PipelineEngineException;
 import org.nrg.pipeline.utils.PipelineEngineUtils;
 import org.nrg.pipeline.xmlbeans.PipelineData;
+import org.nrg.pipeline.xmlbeans.PipelineData.ResourceRequirements.Property;
 import org.nrg.pipeline.xmlbeans.PipelineDocument;
 import org.nrg.pipeline.xmlbeans.PipelineData.ResourceRequirements;
-import org.nrg.pipeline.xmlbeans.PipelineData.ResourceRequirements.Property;
 
 public class PipelineResourceRequirements  {
 	
@@ -25,6 +25,7 @@ public class PipelineResourceRequirements  {
 	
 	public static final String DRMAA_JOBTEMPLATE_JOBENVIRONMENT_PREFIX = "DRMAA_JobTemplate_JobEnvironment_";
 	public static final String DRMAA_JOBTEMPLATE_JOBRESOURCE = "DRMAA_JobTemplate_JobResource";
+	public static final String DRMAA_JOBTEMPLATE_JOBCATEGORY = "DRMAA_JobTemplate_JobCategory";
 	
 	public PipelineResourceRequirements (String[] jobArgs) {
 		this.jobArgs = jobArgs;
@@ -72,6 +73,21 @@ public class PipelineResourceRequirements  {
 	   				String name = resources[i].getName();
 	       			if (name.startsWith(DRMAA_JOBTEMPLATE_JOBRESOURCE)) {
 	       				rtn = resources[i].getStringValue();
+	       				break;
+	       			}
+	       		}
+		 }
+		return rtn;
+     }
+
+	
+	public String getJobCategory() {
+		String rtn = null;
+		if (resources != null) {
+	       		for (int i = 0; i < resources.length; i++) {
+	   				String name = resources[i].getName();
+	       			if (name.startsWith(DRMAA_JOBTEMPLATE_JOBCATEGORY)) {
+	       				rtn = resources[i].getStringValue().trim();
 	       				break;
 	       			}
 	       		}

@@ -49,9 +49,12 @@ public class XNATPipelineBatchLauncher  {
             String[] argv = new String[args.size()];
             args.copyInto(argv);
             
+            CommandLineArguments commandArgs = new CommandLineArguments(argv);
+
+            
             if (!commandLineArgs.isQueued()) {
                 try {
-                    XNATPipelineLauncher launcher = new XNATPipelineLauncher(argv);
+                    XNATPipelineLauncher launcher = new XNATPipelineLauncher(commandArgs);
                     launcher.notify(false);
                     launcher.launch();
                 }catch(Exception e) {
