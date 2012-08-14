@@ -46,7 +46,13 @@ public class XNATPipelineLauncher implements Observer {
         }
 
         execEnv = commandLineArgs.getExecutionEnvironment();
+    } 
+	
+    public XNATPipelineLauncher(CommandLineArguments args) {
+        commandLineArgs = args;
+        execEnv =commandLineArgs.getExecutionEnvironment();
     }
+
 
     public Parameters launch() throws Exception {
         setProperties();
@@ -207,7 +213,8 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     public static void main(String argv[]) {
-        XNATPipelineLauncher launcher = new XNATPipelineLauncher(argv);
+        CommandLineArguments commandArgs = new CommandLineArguments(argv);    	
+        XNATPipelineLauncher launcher = new XNATPipelineLauncher(commandArgs);
         boolean success = launcher.run();
         if (success) {
             System.exit(0);
