@@ -197,7 +197,7 @@ public class XNATPipelineLauncher implements Observer {
         failureMsg += "<br><br><br> We appreciate your patience.  Please contact " + adminEmails[0] + " with questions or concerns. ";
         try {
             if (!commandLineArgs.notifyOnlyAdmin()) {
-                MailUtils.send(site + " update: Processing failed for " + label, failureMsg, commandLineArgs.getEmailIds(), outfilepath, errorfilepath);
+                MailUtils.send(site + " update: Processing failed for " + label, failureMsg, commandLineArgs.getEmailIds(), outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
             }
             failureMsg += "<br><br><br> Pipeline:  <br><br>" + commandLineArgs.getPipelineFullPath();
             failureMsg += "<br><br><br> Cause:  <br><br>" + ExceptionUtils.getStackTrace(e, null);
@@ -205,7 +205,7 @@ public class XNATPipelineLauncher implements Observer {
                 ArrayList<String> emails = new ArrayList<String>();
                 for (int l = 0; l < adminEmails.length; l++)
                     emails.add(adminEmails[l]);
-                MailUtils.send(site + " update: Processing failed for " + label, failureMsg, emails, outfilepath, errorfilepath);
+                MailUtils.send(site + " update: Processing failed for " + label, failureMsg, emails, outfilepath, errorfilepath,  commandLineArgs.getUserName(), commandLineArgs.getPassword());
             }
         } catch (Exception e1) {
             System.out.println("Couldnt send email msg");
@@ -248,7 +248,7 @@ public class XNATPipelineLauncher implements Observer {
     private void success(Parameters params) {
         if (doesNotification() && commandLineArgs.getEmailIds() != null && commandLineArgs.getEmailIds().size() > 0) {
             try {
-                MailUtils.send("Pipeline Complete", "Pipeline: " + commandLineArgs.getPipelineFullPath() + " was successfully completed for " + ParameterUtils.GetParameters(params), commandLineArgs.getEmailIds(), null, null);
+                MailUtils.send("Pipeline Complete", "Pipeline: " + commandLineArgs.getPipelineFullPath() + " was successfully completed for " + ParameterUtils.GetParameters(params), commandLineArgs.getEmailIds(), null, null, commandLineArgs.getUserName(), commandLineArgs.getPassword());
             } catch (Exception e1) {
                 System.out.println("Couldn't send email msg");
                 e1.printStackTrace();
