@@ -39,20 +39,23 @@ public class XNATPipelineLauncher implements Observer {
         this.args = args;
         commandLineArgs = new CommandLineArguments(args);
 
-        if (commandLineArgs.getLogPropertiesFile() != null) {
-            PropertyConfigurator.configure(commandLineArgs.getLogPropertiesFile());
-        } else {
-            BasicConfigurator.configure();
-        }
-
+        init();
         execEnv = commandLineArgs.getExecutionEnvironment();
     } 
 	
     public XNATPipelineLauncher(CommandLineArguments args) {
         commandLineArgs = args;
+        init();
         execEnv =commandLineArgs.getExecutionEnvironment();
     }
 
+    private void init() {
+        if (commandLineArgs.getLogPropertiesFile() != null) {
+            PropertyConfigurator.configure(commandLineArgs.getLogPropertiesFile());
+        } else {
+            BasicConfigurator.configure();
+        }
+    }
 
     public Parameters launch() throws Exception {
         setProperties();
