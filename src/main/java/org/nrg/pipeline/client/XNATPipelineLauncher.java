@@ -1,6 +1,8 @@
 package org.nrg.pipeline.client;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -12,7 +14,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.nrg.pipeline.client.utils.FileUtils;
-import org.nrg.pipeline.exception.PipelineException;
+import org.nrg.pipeline.exception.PipelineEngineException;
 import org.nrg.pipeline.manager.EventManager;
 import org.nrg.pipeline.manager.PipelineManager;
 import org.nrg.pipeline.utils.ExceptionUtils;
@@ -100,6 +102,7 @@ public class XNATPipelineLauncher implements Observer {
             workFlowData.setID(commandLineArgs.getId());
             workFlowData.setPipelineName(commandLineArgs.getPipelineName());
             workFlowData.setStatus("HOLD");
+
             if (commandLineArgs.getProject() != null) workFlowData.setExternalID(commandLineArgs.getProject());
         }
         workFlowData.setJobID(jobId);
@@ -111,7 +114,8 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     public synchronized void update(Observable obj, Object msg) {
-        if (msg == null || !(msg instanceof Notification) || !commandLineArgs.recordWorkflow()) {
+ 
+    	if (msg == null || !(msg instanceof Notification) || !commandLineArgs.recordWorkflow()) {
             return;
         }
 
@@ -127,6 +131,7 @@ public class XNATPipelineLauncher implements Observer {
         workFlowData.setDataType(commandLineArgs.getDataType());
         workFlowData.setID(commandLineArgs.getId());
         workFlowData.setExternalID(commandLineArgs.getProject());
+
         if (notification.getStepTimeLaunched() != null) workFlowData.setCurrentStepLaunchTime(notification.getStepTimeLaunched());
         if (notification.getCurrentStep() != null) workFlowData.setCurrentStepId(notification.getCurrentStep());
         if (notification.getStatus() != null) workFlowData.setStatus(notification.getStatus());
@@ -139,10 +144,14 @@ public class XNATPipelineLauncher implements Observer {
             XnatExecutionEnvironment aexecEnv = (XnatExecutionEnvironment) absExec.changeType(XnatExecutionEnvironment.type);
             aexecEnv.set(execEnv);
         }
+ 
         try {
             new XMLStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
         } catch (Exception e) {
-            System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
+            try {
+            	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
+            }catch(IOException ioe){ System.out.println(wrkFlow.toString());};
+        	System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
             logger.fatal(e);
             System.exit(1);
         }
@@ -191,13 +200,14 @@ public class XNATPipelineLauncher implements Observer {
         if (label == null) label = commandLineArgs.getId();
         String outfilepath = null;
         String errorfilepath = null;
-        if (e instanceof PipelineException) {
-            outfilepath = ((PipelineException) e).getOutputFileName();
-            errorfilepath = ((PipelineException) e).getErrorFileName();
+        if (e instanceof PipelineEngineException) {
+            outfilepath = ((PipelineEngineException) e).getOutputFileName();
+            errorfilepath = ((PipelineEngineException) e).getErrorFileName();
         }
         String failureMsg = "The processing request you submitted for " + label + " could not be completed at this time. <br><br><br> The " + site + " technical team is aware of the issue and will notify you when it has been resolved.";
         failureMsg += "<br><br><br> The stdout and the error log files are available as attachments for your perusal.";
         failureMsg += "<br><br><br> We appreciate your patience.  Please contact " + adminEmails[0] + " with questions or concerns. ";
+        System.out.println("Sending paths " + outfilepath + " " + errorfilepath);
         try {
             if (!commandLineArgs.notifyOnlyAdmin()) {
                 MailUtils.send(site + " update: Processing failed for " + label, failureMsg, commandLineArgs.getEmailIds(), outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
