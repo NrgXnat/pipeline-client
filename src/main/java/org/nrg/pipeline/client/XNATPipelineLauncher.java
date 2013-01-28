@@ -17,6 +17,8 @@ import org.nrg.pipeline.client.utils.FileUtils;
 import org.nrg.pipeline.exception.PipelineEngineException;
 import org.nrg.pipeline.manager.EventManager;
 import org.nrg.pipeline.manager.PipelineManager;
+import org.nrg.pipeline.process.LocalProcessLauncher;
+import org.nrg.pipeline.utils.CommandStatementPresenter;
 import org.nrg.pipeline.utils.ExceptionUtils;
 import org.nrg.pipeline.utils.MailUtils;
 import org.nrg.pipeline.utils.Notification;
@@ -28,6 +30,7 @@ import org.nrg.pipeline.xmlbeans.workflow.WorkflowData;
 import org.nrg.pipeline.xmlbeans.workflow.WorkflowDocument;
 import org.nrg.pipeline.xmlbeans.workflow.XnatExecutionEnvironment;
 import org.nrg.pipeline.xmlreader.XmlReader;
+import org.nrg.xnattools.SessionManager;
 import org.nrg.xnattools.xml.XMLSearch;
 import org.nrg.xnattools.xml.XMLStore;
 
@@ -57,6 +60,8 @@ public class XNATPipelineLauncher implements Observer {
         } else {
             BasicConfigurator.configure();
         }
+        //Acquire a JSESSION and this will be used throughout the execution of the pipeline
+        SessionManager.GetInstance(commandLineArgs.getHost(),commandLineArgs.getUserName(), commandLineArgs.getPassword());
     }
 
     public Parameters launch() throws Exception {
@@ -207,7 +212,18 @@ public class XNATPipelineLauncher implements Observer {
         String failureMsg = "The processing request you submitted for " + label + " could not be completed at this time. <br><br><br> The " + site + " technical team is aware of the issue and will notify you when it has been resolved.";
         failureMsg += "<br><br><br> The stdout and the error log files are available as attachments for your perusal.";
         failureMsg += "<br><br><br> We appreciate your patience.  Please contact " + adminEmails[0] + " with questions or concerns. ";
-        System.out.println("Sending paths " + outfilepath + " " + errorfilepath);
+//        System.out.println("Sending paths " + outfilepath + " " + errorfilepath);
+        if (outfilepath != null) {
+        	String tailLines = getLastLines(outfilepath);
+        	tailLines = tailLines.replace("\n", "<br>");
+        	failureMsg += "<br><br><br> TAIL " + outfilepath + "<br><br> " + tailLines +" <br><br>";
+        }
+        if (errorfilepath != null) {
+        	String tailLines = getLastLines(errorfilepath);
+        	tailLines = tailLines.replace("\n", "<br>");
+        	failureMsg += "<br><br><br> TAIL " + errorfilepath + "<br><br> " + tailLines +" <br><br>";
+        }
+
         try {
             if (!commandLineArgs.notifyOnlyAdmin()) {
                 MailUtils.send(site + " update: Processing failed for " + label, failureMsg, commandLineArgs.getEmailIds(), outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
@@ -235,6 +251,31 @@ public class XNATPipelineLauncher implements Observer {
         System.exit(1);
     }
 
+    
+    private String getLastLines(String filePath) {
+    	String rtn = "";
+        String osName = System.getProperty("os.name");
+    	try {
+    		int tail_lines = 40;
+    		try {
+    			tail_lines = Integer.parseInt(properties.getProperty("FAILURE_EMAIL_INCLUDED_TAIL_LINES"));
+    		}catch(Exception e) {}
+    		if (filePath != null && !osName.toLowerCase().startsWith("windows")) { 
+				CommandStatementPresenter command   = new CommandStatementPresenter("tail -n" + tail_lines + " " + filePath);
+				LocalProcessLauncher launcher = new LocalProcessLauncher(null,null);
+		        launcher.launchProcess(command,null, 1000);
+		        if (launcher.getStreamOutput() != null)
+		           rtn = launcher.getStreamOutput();
+		        if (rtn == null && launcher.getStreamErrOutput() != null)
+		           rtn = launcher.getStreamErrOutput();
+		        return rtn;
+    		}
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	return rtn;
+    }
+    
     public boolean run() {
         log(args);
         try {

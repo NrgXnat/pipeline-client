@@ -21,8 +21,8 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.utils.XMLBeansUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
-import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
+import org.nrg.pipeline.xmlbeans.ParameterData.Values;
 import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.pipeline.xmlbeans.workflow.XnatExecutionEnvironment;
 import org.nrg.pipeline.xmlreader.XmlReader;
@@ -226,10 +226,11 @@ public class CommandLineArguments extends AbsVersion {
             printUsage();
         }
         execEnv.setSupressNotification(supressNotification);
+
     }
     
     public XnatExecutionEnvironment getExecutionEnvironment() {
-        return execEnv;
+    	return execEnv;
     }
     
     @SuppressWarnings("unchecked")
@@ -493,8 +494,14 @@ public class CommandLineArguments extends AbsVersion {
                 execParamFile = execEnv.addNewParameterFile();
             }
             execParamFile.setPath(path);
-            execParamFile.setXml("<![CDATA[" + paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>");
-/*            for (int i = 0; i < paramsFromFile.sizeOfParameterArray(); i++) {
+            if (!execParamFile.isSetXml()) {
+              execParamFile.setXml("<![CDATA[" + paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>");
+              //execParamFile.setXml(paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()));
+            }
+//            System.out.println(execEnv.toString());
+
+            // System.out.println(execParamFile.getXml());
+            /*            for (int i = 0; i < paramsFromFile.sizeOfParameterArray(); i++) {
                 XnatExecutionEnvironment.Parameters.Parameter execParam =  execParams.addNewParameter();
                 execParam.setName(paramsFromFile.getParameterArray(i).getName());
                 String paramValues = "";
