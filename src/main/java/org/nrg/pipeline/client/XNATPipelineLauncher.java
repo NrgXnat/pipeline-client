@@ -1,8 +1,13 @@
 package org.nrg.pipeline.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -31,6 +36,7 @@ import org.nrg.pipeline.xmlbeans.workflow.WorkflowDocument;
 import org.nrg.pipeline.xmlbeans.workflow.XnatExecutionEnvironment;
 import org.nrg.pipeline.xmlreader.XmlReader;
 import org.nrg.xnattools.SessionManager;
+import org.nrg.xnattools.service.WebServiceClient;
 import org.nrg.xnattools.xml.XMLSearch;
 import org.nrg.xnattools.xml.XMLStore;
 
@@ -107,7 +113,6 @@ public class XNATPipelineLauncher implements Observer {
             workFlowData.setID(commandLineArgs.getId());
             workFlowData.setPipelineName(commandLineArgs.getPipelineName());
             workFlowData.setStatus("HOLD");
-
             if (commandLineArgs.getProject() != null) workFlowData.setExternalID(commandLineArgs.getProject());
         }
         workFlowData.setJobID(jobId);
@@ -152,14 +157,14 @@ public class XNATPipelineLauncher implements Observer {
  
         try {
             new XMLStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
-        } catch (Exception e) {
-            try {
-            	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
-            }catch(IOException ioe){ System.out.println(wrkFlow.toString());};
-        	System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
-            logger.fatal(e);
-            System.exit(1);
-        }
+        } catch(Exception e){
+        	try {
+                	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
+                }catch(IOException ioe){ System.out.println(wrkFlow.toString());};
+            	System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
+                logger.fatal(e);
+                System.exit(1);
+            }
     }
 
     public void notify(boolean doesNotification) {
@@ -258,7 +263,7 @@ public class XNATPipelineLauncher implements Observer {
     	try {
     		int tail_lines = 40;
     		try {
-    			tail_lines = Integer.parseInt(properties.getProperty("FAILURE_EMAIL_INCLUDED_TAIL_LINES"));
+    			tail_lines = Integer.parseInt(properties.getProperty(FAILURE_EMAIL_INCLUDED_TAIL_LINES));
     		}catch(Exception e) {}
     		if (filePath != null && !osName.toLowerCase().startsWith("windows")) { 
 				CommandStatementPresenter command   = new CommandStatementPresenter("tail -n" + tail_lines + " " + filePath);
@@ -285,6 +290,12 @@ public class XNATPipelineLauncher implements Observer {
         } catch (Exception e) {
             fail(e);
             return false;
+        }finally {
+            try {
+            	SessionManager.GetInstance().deleteJSESSION();
+            }catch(Exception e) {
+            	e.printStackTrace();
+            }
         }
     }
 
@@ -327,36 +338,45 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     private void isPipelineQueuedOrAwaitingOrOnHold() {
-        try {
-            XMLSearch search = new XMLSearch(commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword());
-            ArrayList<String> files = search.searchAll("wrk:workflowData.ID", commandLineArgs.getId(), "=", "wrk:workflowData", FileUtils.getTempFolder());
-            for (int i = 0; i < files.size(); i++) {
-                WorkflowDocument wrkFlow = (WorkflowDocument) new XmlReader().read(files.get(i), true);
-                if (wrkFlow.getWorkflow().getPipelineName().equals(commandLineArgs.getPipelineName())
-                        && (wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("QUEUED") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("AWAITING ACTION") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("HOLD"))) {
-                    workFlow = wrkFlow;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            logger.fatal("Couldnt search for queued workflows", e);
-        }
+    	isPipelineQueuedOrAwaitingOrOnHold(commandLineArgs.getHost());    		
     }
 
     private void isPipelineQueuedOrAwaitingOrOnHold(String aliasHost) {
-        try {
-            XMLSearch search = new XMLSearch(aliasHost, commandLineArgs.getUserName(), commandLineArgs.getPassword());
-            ArrayList<String> files = search.searchAll("wrk:workflowData.ID", commandLineArgs.getId(), "=", "wrk:workflowData", FileUtils.getTempFolder());
-            for (int i = 0; i < files.size(); i++) {
-                WorkflowDocument wrkFlow = (WorkflowDocument) new XmlReader().read(files.get(i), true);
-                if (wrkFlow.getWorkflow().getPipelineName().equals(commandLineArgs.getPipelineName())
-                        && (wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("QUEUED") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("AWAITING ACTION") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("HOLD"))) {
-                    workFlow = wrkFlow;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            logger.fatal("Couldnt search for queued workflows", e);
+        Integer workFlowPrimaryKey = commandLineArgs.getWorkFlowPrimaryKey();
+    	if (workFlowPrimaryKey!=null) {
+    		String uri =  "data/services/workflows/workflowid/" + workFlowPrimaryKey ;
+    		ByteArrayOutputStream out = new ByteArrayOutputStream();
+    		ByteArrayInputStream in = null;
+    		try {
+	            WebServiceClient webClient = new WebServiceClient(aliasHost,commandLineArgs.getUserName(), commandLineArgs.getPassword());
+	           	webClient.connect(uri, out);
+	            in = new ByteArrayInputStream(out.toByteArray());
+	            workFlow = (WorkflowDocument) new XmlReader().read(in);
+    		} catch (Exception e) {
+	            logger.fatal("Couldnt search for queued workflows", e);
+	        }finally {
+	        	try {
+	        		out.close(); if (in != null) in.close();
+	        	}catch(Exception e1){e1.printStackTrace();}
+	        	try {
+                	workFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
+                }catch(IOException ioe){ System.out.println(workFlow.toString());};
+	        }
+        }else {
+	    	try {
+	            XMLSearch search = new XMLSearch(aliasHost, commandLineArgs.getUserName(), commandLineArgs.getPassword());
+	            ArrayList<String> files = search.searchAll("wrk:workflowData.ID", commandLineArgs.getId(), "=", "wrk:workflowData", FileUtils.getTempFolder());
+	            for (int i = 0; i < files.size(); i++) {
+	                WorkflowDocument wrkFlow = (WorkflowDocument) new XmlReader().read(files.get(i), true);
+	                if (wrkFlow.getWorkflow().getPipelineName().equals(commandLineArgs.getPipelineName())
+	                        && (wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("QUEUED") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("AWAITING ACTION") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("HOLD"))) {
+	                    workFlow = wrkFlow;
+	                    break;
+	                }
+	            }
+	        } catch (Exception e) {
+	            logger.fatal("Couldnt search for queued workflows", e);
+	        }
         }
     }
 
@@ -366,4 +386,7 @@ public class XNATPipelineLauncher implements Observer {
     private Properties properties;
     private CommandLineArguments commandLineArgs;
     private String[] args;
+    final String RETRY_CONNECTION_AFTER_MILLISECONDS="RETRY_CONNECTION_AFTER_MILLISECONDS";
+    final String FAILURE_EMAIL_INCLUDED_TAIL_LINES="FAILURE_EMAIL_INCLUDED_TAIL_LINES";	
+
 }
