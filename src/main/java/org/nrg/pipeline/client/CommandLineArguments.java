@@ -65,6 +65,11 @@ public class CommandLineArguments extends AbsVersion {
     public void setRecordWorkflow(boolean recordWorkflow) {
         this.recordWorkflow = recordWorkflow;
     }
+
+    public Integer getWorkFlowPrimaryKey() {
+		return workFlowPrimaryKey;
+	}
+
     
     public CommandLineArguments(String argv[]) {
         int c;
@@ -98,6 +103,7 @@ public class CommandLineArguments extends AbsVersion {
         longopts.add(new LongOpt("useAlias", LongOpt.NO_ARGUMENT, null, 'z'));
         longopts.add(new LongOpt("notifyonlyadmin", LongOpt.NO_ARGUMENT, null, 'j'));
         longopts.add(new LongOpt("recordWorkflow", LongOpt.OPTIONAL_ARGUMENT, null, 'x'));
+        longopts.add(new LongOpt("workFlowPrimaryKey", LongOpt.REQUIRED_ARGUMENT, null, 'k'));
 
         // 
         Getopt g = new Getopt("XNATPipelineLauncher", argv, "p:r:m:s:e:d:i:y:w:o:l:c:f:t:a:b:zjghnvx;", longopts.toArray(new LongOpt[] {}), true);
@@ -214,6 +220,9 @@ public class CommandLineArguments extends AbsVersion {
                case 'x':
                    recordWorkflow = Boolean.parseBoolean(g.getOptarg());
             	   break;
+               case 'k':
+                   workFlowPrimaryKey = Integer.parseInt(g.getOptarg());
+            	   break;
                default:
                  echoVersion();  
                  printUsage();
@@ -267,6 +276,7 @@ public class CommandLineArguments extends AbsVersion {
         usage += "\t -catalogPath: Root path relative to which Pipeline XML's are located\n";
         usage += "\t -notify: (optional) Email Ids to which notifications are to be sent\n";
         usage += "\t -supressNotification: (optional) Pipeline completion emails will be supressed\n";
+        usage += "\t -workFlowPrimaryKey <Integer value>: (preferred) Workflow entry will be updated using the primary key\n";
         usage += "\t -help\n";
 
         System.out.println(usage);
@@ -321,6 +331,7 @@ public class CommandLineArguments extends AbsVersion {
         }
         return paramDoc;
     }
+    
     public String getPipelineName() {
         return (String)commandLineArgs.get("pipeline");
     }
@@ -419,6 +430,8 @@ public class CommandLineArguments extends AbsVersion {
     public String getLogPropertiesFile() {
         return (String)commandLineArgs.get("log");
     }
+
+   
     
     private void addParameter(String paramValuePair, boolean sensitive) {
         //expected to get <name>=<csv value>
@@ -495,8 +508,8 @@ public class CommandLineArguments extends AbsVersion {
             }
             execParamFile.setPath(path);
             if (!execParamFile.isSetXml()) {
-              execParamFile.setXml("<![CDATA[" + paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>");
-              //execParamFile.setXml(paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()));
+              //execParamFile.setXml("<![CDATA[" + paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()) + "]]>");
+              execParamFile.setXml(paramsFromFileDoc.xmlText(new XmlOptions().setSaveAggressiveNamespaces()));
             }
 //            System.out.println(execEnv.toString());
 
@@ -534,4 +547,5 @@ public class CommandLineArguments extends AbsVersion {
     private boolean recordWorkflow = true;
     private int noOfRequiredArguments = 7;
     private int noOfRequiredArgumentsAvailable = 0;
+    private Integer workFlowPrimaryKey=null;
 }
