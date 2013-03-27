@@ -222,7 +222,8 @@ public class CommandLineArguments extends AbsVersion {
             	   break;
                case 'k':
                    workFlowPrimaryKey = Integer.parseInt(g.getOptarg());
-            	   break;
+                   addParameter("workflowid="+workFlowPrimaryKey, false);
+                   break;
                default:
                  echoVersion();  
                  printUsage();
