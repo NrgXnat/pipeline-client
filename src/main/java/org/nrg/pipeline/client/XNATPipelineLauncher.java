@@ -358,9 +358,9 @@ public class XNATPipelineLauncher implements Observer {
 	        	try {
 	        		out.close(); if (in != null) in.close();
 	        	}catch(Exception e1){e1.printStackTrace();}
-	        	try {
-                	workFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
-                }catch(IOException ioe){ System.out.println(workFlow.toString());};
+	        	//try {
+                //	if (workFlow!=null) workFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
+                //}catch(IOException ioe){ System.out.println(workFlow.toString());};
 	        }
         }else {
 	    	try {
