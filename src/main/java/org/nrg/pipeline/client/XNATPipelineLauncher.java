@@ -119,7 +119,10 @@ public class XNATPipelineLauncher implements Observer {
         try {
             new XMLStore(wrkFlow, aliasHostUrl, commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
         } catch (Exception e) {
-            logger.fatal(e);
+        	try {
+            	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
+            }catch(IOException ioe){ System.out.println(wrkFlow.toString());};
+        	System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
         }
     }
 
