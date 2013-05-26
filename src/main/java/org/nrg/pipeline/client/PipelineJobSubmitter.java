@@ -196,10 +196,11 @@ public class PipelineJobSubmitter {
 		         session.init(null);
 		         jt = session.createJobTemplate();
 		         String wd = java.lang.System.getProperty("out.location");
+		         String cwd = java.lang.System.getProperty("cwd.location");
 		         String aliasHost = null;
 		         aliasHost = java.lang.System.getProperty("aliasHost");
-		         if (wd != null) {
-		        	 jt.setWorkingDirectory(wd);
+		         if (cwd != null) {
+		        	 jt.setWorkingDirectory(cwd);
 		         }
 
 		         jt.setRemoteCommand(command);
