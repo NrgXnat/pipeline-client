@@ -39,6 +39,7 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
     
     public FunctionalReconstructedImageCreator(String argv[]) {
         super(argv);
+        
     }
     
     public void createReconstructedImage() throws Exception {
