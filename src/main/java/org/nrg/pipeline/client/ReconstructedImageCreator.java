@@ -52,6 +52,7 @@ import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData.InScans;
 import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData.Out;
 import org.nrg.pipeline.xmlreader.XmlReader;
 import org.nrg.plexiViewer.Reader.PlexiImageHeaderReader;
+import org.nrg.xnattools.SessionManager;
 import org.nrg.xnattools.xml.MRXMLSearch;
 import org.nrg.xnattools.xml.XMLStore;
 
@@ -175,6 +176,7 @@ public class ReconstructedImageCreator {
     }*/
     
     protected MRSessionDocument getMrSessionFromHost() throws Exception {
+        SessionManager.GetInstance(commandLineArgs.get("host"),commandLineArgs.get("username"), commandLineArgs.get("password"));
     	MRSessionDocument mrSession = new MRXMLSearch(commandLineArgs.get("host"), commandLineArgs.get("username"), commandLineArgs.get("password")).getMrSessionFromHost(commandLineArgs.get("xnatId"), false);
         return mrSession;
    }
