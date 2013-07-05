@@ -234,11 +234,12 @@ public class PipelineJobSubmitter {
 		        	   log_message += "JOB_ARGS " + z + ":" + jobArgs[z] +"\n";
 		        	 }
 			         // Submit job to run & wait for completion
-			         id = session.runJob(jt);
 			         if (wd != null) {
 			        	 jt.setOutputPath(wd);
 			        	 jt.setErrorPath(wd);
 			         }
+			         id = session.runJob(jt);
+
 			         System.out.println(" Job " + id + " is on HOLD. Assigning jobId to workflow");
 			         
 			         log(log_message +"\n job id= "+ id);
