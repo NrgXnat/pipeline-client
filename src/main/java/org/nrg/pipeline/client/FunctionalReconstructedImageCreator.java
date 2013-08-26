@@ -74,12 +74,16 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
 
         ReconstructedImageData recon = reconDoc.addNewReconstructedImage();
 
-	    DateFormat dateFormat = new SimpleDateFormat("yyMMdd");
+	    DateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss");
 	    DateFormat xmldateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	    Date now = Calendar.getInstance().getTime();
         String sessionId = commandLineArgs.get("xnatId");
         
         String existingReconId =sessionId + "_" + commandLineArgs.get("type") + "_" +dateFormat.format(now) ;
+	    if (commandLineArgs.get("reconId") != null) {
+	    	existingReconId = commandLineArgs.get("reconId");
+	    }
+
         recon.setID(existingReconId);
         recon.setImageSessionID(sessionId);
         recon.setType(commandLineArgs.get("type"));
@@ -96,13 +100,15 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
         
         addQCData(recon);
         
-        try {
+        reconDoc.save(new File(commandLineArgs.get("sessionId")+"_recon.xml"),new XmlOptions().setSavePrettyPrint());
+        
+        /*try {
             new XMLStore(commandLineArgs.get("host"), commandLineArgs.get("username"), commandLineArgs.get("password")).store(reconDoc.xmlText(new XmlOptions().setSavePrettyPrint().setSaveAggressiveNamespaces()));
             System.out.println("Session stored");
         }catch(Exception e){
-            recon.save(new File(commandLineArgs.get("sessionId")),new XmlOptions().setSavePrettyPrint());
+            reconDoc.save(new File(commandLineArgs.get("sessionId")+"_failed.xml"),new XmlOptions().setSavePrettyPrint());
             e.printStackTrace();
-        } 
+        } */
         System.out.println("Session stored");
     }
     
