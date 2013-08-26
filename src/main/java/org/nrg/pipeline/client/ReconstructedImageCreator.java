@@ -64,7 +64,7 @@ public class ReconstructedImageCreator {
         inScanIds = new ArrayList<String>();
         stepIds = new ArrayList<String>();
         stepIndices = new Hashtable<String, ArrayList<Integer>>();
-        LongOpt[] longopts = new LongOpt[15];
+        LongOpt[] longopts = new LongOpt[16];
         longopts[0] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
         longopts[1] = new LongOpt("sessionId", LongOpt.REQUIRED_ARGUMENT, null, 's'); 
         longopts[2] = new LongOpt("xnatId", LongOpt.REQUIRED_ARGUMENT, null, 'i'); 
@@ -80,8 +80,9 @@ public class ReconstructedImageCreator {
         longopts[12] = new LongOpt("archiveDir", LongOpt.REQUIRED_ARGUMENT, null, 'a');
         longopts[13] = new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'o');
         longopts[14] = new LongOpt("log", LongOpt.REQUIRED_ARGUMENT, null, 'l');
+        longopts[15] = new LongOpt("reconId", LongOpt.REQUIRED_ARGUMENT, null, 'r');
         
-        Getopt g = new Getopt("ReconstructedImageCreator", argv, "s:i:t:b:c:n:f:x:u:w:d:a:o:l:h;", longopts, true);
+        Getopt g = new Getopt("ReconstructedImageCreator", argv, "s:i:t:b:c:n:f:x:u:w:d:a:o:l:r:h;", longopts, true);
         g.setOpterr(false); // We'll do our own error handling
         //
         while ((c = g.getopt()) != -1) {
@@ -140,6 +141,10 @@ public class ReconstructedImageCreator {
                        dir = dir.substring(0, dir.length()-1);
                    commandLineArgs.put("buildDir",dir);
                    noOfRequiredArgumentsAvailable++;
+                   break;
+               case 'r':
+                   String reconId = g.getOptarg();
+                   commandLineArgs.put("reconId",reconId);
                    break;
                case 'a':
                    String adir = g.getOptarg();
@@ -213,11 +218,14 @@ public class ReconstructedImageCreator {
 
         ReconstructedImageData recon = reconDoc.addNewReconstructedImage();
 
-	    DateFormat dateFormat = new SimpleDateFormat("yyMMdd");
+	    DateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss");
 	    DateFormat xmldateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	    Date now = Calendar.getInstance().getTime();
-        
         String existingReconId =sessionId + "_" + commandLineArgs.get("type") + "_" +dateFormat.format(now) ;
+        
+	    if (commandLineArgs.get("reconId") != null) {
+	    	existingReconId = commandLineArgs.get("reconId");
+	    }
         recon.setID(existingReconId);
         recon.setType(commandLineArgs.get("type"));
         recon.setBaseScanType(commandLineArgs.get("baseScanType"));
@@ -450,6 +458,7 @@ public class ReconstructedImageCreator {
         usage += "\t -buildDir: the path to directory where the session was built\n";
         usage += "\t -archiveDir: the parent path to session folder in the archive\n";
         usage += "\t -log <path to log4j.properties file>\n";
+        usage += "\t -reconId <OPTIONAL - Reconstruction ID to be assigned>\n";
         usage += "\t -help\n";
 
         System.out.println(usage);

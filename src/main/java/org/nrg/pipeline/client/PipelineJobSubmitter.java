@@ -268,8 +268,8 @@ public class PipelineJobSubmitter {
 			         // Cleanup after run
 		    	    if (session != null) {
 		    	    	try {
-					         session.deleteJobTemplate(jt);
-					         session.exit ();
+					         if (jt!=null)session.deleteJobTemplate(jt);
+					         session.exit();
 		    	    	}catch(DrmaaException e) {
 		    	    		System.out.println ("DRMAA Error: " + e.getClass() + " " + e.getMessage());
 		    	    	}
