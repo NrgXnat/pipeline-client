@@ -52,8 +52,8 @@ public class XNATPipelineLauncher implements Observer {
 
         init();
         execEnv = commandLineArgs.getExecutionEnvironment();
-    } 
-	
+    }
+
     public XNATPipelineLauncher(CommandLineArguments args) {
         commandLineArgs = args;
         init();
@@ -127,7 +127,7 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     public synchronized void update(Observable obj, Object msg) {
- 
+
     	if (msg == null || !(msg instanceof Notification) || !commandLineArgs.recordWorkflow()) {
             return;
         }
@@ -157,7 +157,7 @@ public class XNATPipelineLauncher implements Observer {
             XnatExecutionEnvironment aexecEnv = (XnatExecutionEnvironment) absExec.changeType(XnatExecutionEnvironment.type);
             aexecEnv.set(execEnv);
         }
- 
+
         try {
             new XMLStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
         } catch(Exception e){
@@ -250,7 +250,7 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     public static void main(String argv[]) {
-        CommandLineArguments commandArgs = new CommandLineArguments(argv);    	
+        CommandLineArguments commandArgs = new CommandLineArguments(argv);
         XNATPipelineLauncher launcher = new XNATPipelineLauncher(commandArgs);
         boolean success = launcher.run();
         if (success) {
@@ -259,7 +259,7 @@ public class XNATPipelineLauncher implements Observer {
         System.exit(1);
     }
 
-    
+
     private String getLastLines(String filePath) {
     	String rtn = "";
         String osName = System.getProperty("os.name");
@@ -268,7 +268,7 @@ public class XNATPipelineLauncher implements Observer {
     		try {
     			tail_lines = Integer.parseInt(properties.getProperty(FAILURE_EMAIL_INCLUDED_TAIL_LINES));
     		}catch(Exception e) {}
-    		if (filePath != null && !osName.toLowerCase().startsWith("windows")) { 
+    		if (filePath != null && !osName.toLowerCase().startsWith("windows")) {
 				CommandStatementPresenter command   = new CommandStatementPresenter("tail -n" + tail_lines + " " + filePath);
 				LocalProcessLauncher launcher = new LocalProcessLauncher(null,null);
 		        launcher.launchProcess(command,null, 1000);
@@ -283,7 +283,7 @@ public class XNATPipelineLauncher implements Observer {
     	}
     	return rtn;
     }
-    
+
     public boolean run() {
         log(args);
         try {
@@ -341,13 +341,13 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     private void isPipelineQueuedOrAwaitingOrOnHold() {
-    	isPipelineQueuedOrAwaitingOrOnHold(commandLineArgs.getHost());    		
+    	isPipelineQueuedOrAwaitingOrOnHold(commandLineArgs.getHost());
     }
 
     private void isPipelineQueuedOrAwaitingOrOnHold(String aliasHost) {
         Integer workFlowPrimaryKey = commandLineArgs.getWorkFlowPrimaryKey();
     	if (workFlowPrimaryKey!=null) {
-    		String uri =  "data/services/workflows/workflowid/" + workFlowPrimaryKey ;
+    		String uri =  "data/services/workflows/workflowid/" + workFlowPrimaryKey +"?concealHiddenFields=true";
     		ByteArrayOutputStream out = new ByteArrayOutputStream();
     		ByteArrayInputStream in = null;
     		try {
@@ -390,6 +390,6 @@ public class XNATPipelineLauncher implements Observer {
     private CommandLineArguments commandLineArgs;
     private String[] args;
     final String RETRY_CONNECTION_AFTER_MILLISECONDS="RETRY_CONNECTION_AFTER_MILLISECONDS";
-    final String FAILURE_EMAIL_INCLUDED_TAIL_LINES="FAILURE_EMAIL_INCLUDED_TAIL_LINES";	
+    final String FAILURE_EMAIL_INCLUDED_TAIL_LINES="FAILURE_EMAIL_INCLUDED_TAIL_LINES";
 
 }
