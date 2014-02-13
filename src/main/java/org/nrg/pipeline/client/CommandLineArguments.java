@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
+import org.nrg.pipeline.utils.MailUtils;
 import org.nrg.pipeline.utils.XMLBeansUtils;
 import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.ParametersDocument;
@@ -237,6 +238,7 @@ public class CommandLineArguments extends AbsVersion {
         }
         execEnv.setSupressNotification(supressNotification);
 
+        MailUtils.setMailService(this.getHost());
     }
     
     public XnatExecutionEnvironment getExecutionEnvironment() {

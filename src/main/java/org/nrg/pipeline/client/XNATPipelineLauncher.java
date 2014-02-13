@@ -5,9 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -355,6 +352,7 @@ public class XNATPipelineLauncher implements Observer {
 	           	webClient.connect(uri, out);
 	            in = new ByteArrayInputStream(out.toByteArray());
 	            workFlow = (WorkflowDocument) new XmlReader().read(in);
+                workFlow.getWorkflow().setID(workFlowPrimaryKey.toString());
     		} catch (Exception e) {
 	            logger.fatal("Couldnt search for queued workflows", e);
 	        }finally {

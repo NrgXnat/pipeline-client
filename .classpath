@@ -16,7 +16,7 @@
 	<classpathentry kind="lib" path="D:/MERCURIAL/MOHANA/xnat_builder_1_6dev/plugin-resources/repository/xdat/jars/xdat-beans-1.6.2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/pipelineBase.jar"/>
 	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/ostermillerutils_1_05_00_for_java_1_4.jar"/>
-	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/xnat_pipeline-1.6.1.jar"/>
+	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/xnat_pipeline-1.6.3.jar"/>
 	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/pipelineWorkFlow.jar"/>
 	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="D:/MERCURIAL/NRG/pipeline_1_6dev/lib/nrg-mail-1.6.1.jar"/>
