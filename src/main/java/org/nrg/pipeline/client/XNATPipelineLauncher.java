@@ -31,6 +31,7 @@ import org.nrg.pipeline.xmlbeans.workflow.XnatExecutionEnvironment;
 import org.nrg.pipeline.xmlreader.XmlReader;
 import org.nrg.xnattools.SessionManager;
 import org.nrg.xnattools.service.WebServiceClient;
+import org.nrg.xnattools.xml.WorkflowStore;
 import org.nrg.xnattools.xml.XMLSearch;
 import org.nrg.xnattools.xml.XMLStore;
 
@@ -96,7 +97,7 @@ public class XNATPipelineLauncher implements Observer {
         }
         workFlowData.setJobID(jobId);
         try {
-            new XMLStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
+            new WorkflowStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
         } catch (Exception e) {
             logger.fatal(e);
         }
@@ -118,7 +119,7 @@ public class XNATPipelineLauncher implements Observer {
         }
         workFlowData.setJobID(jobId);
         try {
-            new XMLStore(wrkFlow, aliasHostUrl, commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
+            new WorkflowStore(wrkFlow, aliasHostUrl, commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
         } catch (Exception e) {
         	try {
             	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
@@ -162,7 +163,7 @@ public class XNATPipelineLauncher implements Observer {
         }
 
         try {
-            new XMLStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
+            new WorkflowStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
         } catch (Exception e) {
             try {
                 wrkFlow.save(new File(commandLineArgs.getId() + "_wrk.xml"));

@@ -7,3 +7,4 @@ syntax: regexp
 ^\.classpath$
 ^\.settings$
 ^.*\.[ei]ml$
+^.*_wrk\.xml$
