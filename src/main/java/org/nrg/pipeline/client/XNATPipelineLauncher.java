@@ -5,13 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Properties;
+import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -26,6 +22,7 @@ import org.nrg.pipeline.utils.MailUtils;
 import org.nrg.pipeline.utils.Notification;
 import org.nrg.pipeline.utils.ParameterUtils;
 import org.nrg.pipeline.utils.PipelineProperties;
+import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.PipelineData.Parameters;
 import org.nrg.pipeline.xmlbeans.workflow.AbstractExecutionEnvironment;
 import org.nrg.pipeline.xmlbeans.workflow.WorkflowData;
@@ -64,7 +61,7 @@ public class XNATPipelineLauncher implements Observer {
             BasicConfigurator.configure();
         }
         //Acquire a JSESSION and this will be used throughout the execution of the pipeline
-        SessionManager.GetInstance(commandLineArgs.getHost(),commandLineArgs.getUserName(), commandLineArgs.getPassword());
+        SessionManager.GetInstance(commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword());
     }
 
     public Parameters launch() throws Exception {
@@ -73,6 +70,13 @@ public class XNATPipelineLauncher implements Observer {
         isPipelineQueuedOrAwaitingOrOnHold();
         EventManager.GetInstance().addObserver(this);
         Parameters params = PipelineManager.GetInstance(commandLineArgs.getConfigurationFile()).launchPipeline(commandLineArgs.getPipelineFullPath(), commandLineArgs.getParametersDocument(), commandLineArgs.getStartAt(), false);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found parameters: ");
+            ParameterData[] array = params.getParameterArray();
+            for (ParameterData item : array) {
+                logger.debug(item.getName() + ": " + item.getValues().toString());
+            }
+        }
         return params;
     }
 
@@ -118,8 +122,10 @@ public class XNATPipelineLauncher implements Observer {
         } catch (Exception e) {
         	try {
             	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
-            }catch(IOException ioe){ System.out.println(wrkFlow.toString());};
-        	System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
+            } catch(IOException ioe) {
+                logger.error("Error saving workflow to forensics file:\r" + wrkFlow.toString(), ioe);
+            }
+            logger.fatal("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible?", e);
         }
     }
 
@@ -138,8 +144,8 @@ public class XNATPipelineLauncher implements Observer {
             workFlowData.setLaunchTime(notification.getPipelineTimeLaunched());
         }
 
-        workFlowData.setDataType(commandLineArgs.getDataType());
-        workFlowData.setID(commandLineArgs.getId());
+            workFlowData.setDataType(commandLineArgs.getDataType());
+            workFlowData.setID(commandLineArgs.getId());
         workFlowData.setExternalID(commandLineArgs.getProject());
 
         if (notification.getStepTimeLaunched() != null) workFlowData.setCurrentStepLaunchTime(notification.getStepTimeLaunched());
@@ -157,14 +163,15 @@ public class XNATPipelineLauncher implements Observer {
 
         try {
             new XMLStore(wrkFlow, commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword()).store();
-        } catch(Exception e){
-        	try {
-                	wrkFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
-                }catch(IOException ioe){ System.out.println(wrkFlow.toString());};
-            	System.out.println("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible? ");
-                logger.fatal(e);
-                System.exit(1);
+        } catch (Exception e) {
+            try {
+                wrkFlow.save(new File(commandLineArgs.getId() + "_wrk.xml"));
+            } catch (IOException ioe) {
+                logger.error("Error saving workflow to forensics file:\r" + wrkFlow.toString(), ioe);
             }
+            logger.fatal("Unable to store workflow entry. Host " + commandLineArgs.getHost() + " may not be accessible?", e);
+            System.exit(1);
+        }
     }
 
     public void notify(boolean doesNotification) {
@@ -175,17 +182,17 @@ public class XNATPipelineLauncher implements Observer {
         return !commandLineArgs.isSupressNotification();
     }
 
-    public void log(String argv[]) {
-        if (argv == null) return;
-        for (int i = 0; i < argv.length;) {
-            if (argv[i].equals("-pwd")) {
-                logger.info(argv[i] + "*******");
+    public void log(String args[]) {
+        if (args == null) return;
+        for (int i = 0; i < args.length;) {
+            if (args[i].equals("-pwd")) {
+                logger.info(args[i] + "*******");
                 i += 2;
-            } else if (argv[i].equals("-parameter") && argv[i + 1].startsWith("pwd")) {
-                logger.info(argv[i] + "pwd=*******");
+            } else if (args[i].equals("-parameter") && args[i + 1].startsWith("pwd")) {
+                logger.info(args[i] + "pwd=*******");
                 i += 2;
             } else {
-                logger.info(argv[i] + " ");
+                logger.info(args[i] + " ");
                 i++;
             }
         }
@@ -198,14 +205,14 @@ public class XNATPipelineLauncher implements Observer {
         String adminEmail = properties.getProperty("ADMIN_EMAIL");
         if (adminEmail == null) adminEmail = "Site Manager";
         String[] adminEmails = adminEmail.split(",");
-        String msg = "The following problems were encountered by the user(s) <br> ";
+        StringBuilder message = new StringBuilder("The following problems were encountered by the user(s) <br> ");
         List<String> notifyEmails = commandLineArgs.getEmailIds();
         if (notifyEmails != null) {
-            for (int i = 0; i < notifyEmails.size(); i++) {
-                msg += notifyEmails.get(i) + " ";
+            for (String notifyEmail : notifyEmails) {
+                message.append(notifyEmail).append(" ");
             }
         }
-        msg += "<br>";
+        message.append("<br>");
         String label = commandLineArgs.getLabel();
         if (label == null) label = commandLineArgs.getId();
         String outfilepath = null;
@@ -214,40 +221,37 @@ public class XNATPipelineLauncher implements Observer {
             outfilepath = ((PipelineEngineException) e).getOutputFileName();
             errorfilepath = ((PipelineEngineException) e).getErrorFileName();
         }
-        String failureMsg = "The processing request you submitted for " + label + " could not be completed at this time. <br><br><br> The " + site + " technical team is aware of the issue and will notify you when it has been resolved.";
-        failureMsg += "<br><br><br> The stdout and the error log files are available as attachments for your perusal.";
-        failureMsg += "<br><br><br> We appreciate your patience.  Please contact " + adminEmails[0] + " with questions or concerns. ";
-//        System.out.println("Sending paths " + outfilepath + " " + errorfilepath);
+        message.append("The processing request you submitted for ").append(label).append(" could not be completed at this time. <br><br><br> The ").append(site).append(" technical team is aware of the issue and will notify you when it has been resolved.");
+        message.append("<br><br><br> The stdout and the error log files are available as attachments for your perusal.");
+        message.append("<br><br><br> We appreciate your patience.  Please contact ").append(adminEmails[0]).append(" with questions or concerns. ");
+
         if (outfilepath != null) {
         	String tailLines = getLastLines(outfilepath);
         	tailLines = tailLines.replace("\n", "<br>");
-        	failureMsg += "<br><br><br> TAIL " + outfilepath + "<br><br> " + tailLines +" <br><br>";
+        	message.append("<br><br><br> TAIL ").append(outfilepath).append("<br><br> ").append(tailLines).append(" <br><br>");
         }
         if (errorfilepath != null) {
         	String tailLines = getLastLines(errorfilepath);
         	tailLines = tailLines.replace("\n", "<br>");
-        	failureMsg += "<br><br><br> TAIL " + errorfilepath + "<br><br> " + tailLines +" <br><br>";
+        	message.append("<br><br><br> TAIL ").append(errorfilepath).append("<br><br> ").append(tailLines).append(" <br><br>");
         }
 
         try {
             if (!commandLineArgs.notifyOnlyAdmin()) {
-                MailUtils.send(site + " update: Processing failed for " + label, failureMsg, commandLineArgs.getEmailIds(), outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
+                MailUtils.send(site + " update: Processing failed for " + label, message.toString(), commandLineArgs.getEmailIds(), outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
             }
-            failureMsg += "<br><br><br> Pipeline:  <br><br>" + commandLineArgs.getPipelineFullPath();
-            failureMsg += "<br><br><br> Cause:  <br><br>" + ExceptionUtils.getStackTrace(e, null);
-            if (adminEmail != null) {
-                ArrayList<String> emails = new ArrayList<String>();
-                for (int l = 0; l < adminEmails.length; l++)
-                    emails.add(adminEmails[l]);
-                MailUtils.send(site + " update: Processing failed for " + label, failureMsg, emails, outfilepath, errorfilepath,  commandLineArgs.getUserName(), commandLineArgs.getPassword());
-            }
+            message.append("<br><br><br> Pipeline:  <br><br>").append(commandLineArgs.getPipelineFullPath());
+            message.append("<br><br><br> Cause:  <br><br>").append(ExceptionUtils.getStackTrace(e, null));
+            ArrayList<String> emails = new ArrayList<String>();
+            Collections.addAll(emails, adminEmails);
+            MailUtils.send(site + " update: Processing failed for " + label, message.toString(), emails, outfilepath, errorfilepath,  commandLineArgs.getUserName(), commandLineArgs.getPassword());
         } catch (Exception e1) {
-            System.out.println("Couldnt send email msg");
+            logger.error("Couldn't send email message", e1);
         }
     }
 
-    public static void main(String argv[]) {
-        CommandLineArguments commandArgs = new CommandLineArguments(argv);
+    public static void main(String args[]) {
+        CommandLineArguments commandArgs = new CommandLineArguments(args);
         XNATPipelineLauncher launcher = new XNATPipelineLauncher(commandArgs);
         boolean success = launcher.run();
         if (success) {
@@ -264,7 +268,8 @@ public class XNATPipelineLauncher implements Observer {
     		int tail_lines = 40;
     		try {
     			tail_lines = Integer.parseInt(properties.getProperty(FAILURE_EMAIL_INCLUDED_TAIL_LINES));
-    		}catch(Exception e) {}
+    		}catch(Exception ignored) {}
+
     		if (filePath != null && !osName.toLowerCase().startsWith("windows")) {
 				CommandStatementPresenter command   = new CommandStatementPresenter("tail -n" + tail_lines + " " + filePath);
 				LocalProcessLauncher launcher = new LocalProcessLauncher(null,null);
@@ -276,7 +281,7 @@ public class XNATPipelineLauncher implements Observer {
 		        return rtn;
     		}
     	}catch(Exception e) {
-    		e.printStackTrace();
+            logger.error("Error getting last lines from log", e);
     	}
     	return rtn;
     }
@@ -300,13 +305,11 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     private void fail(Exception e) {
-        e.printStackTrace();
-        System.out.println("Unable to launch pipeline " + commandLineArgs.getPipelineFullPath());
+        logger.error("Unable to launch pipeline " + commandLineArgs.getPipelineFullPath(), e);
         try {
             composeFailureMessage(e);
         } catch (Exception e1) {
-            System.out.println("Couldn't send email msg");
-            e1.printStackTrace();
+            logger.error("Couldn't send email message", e1);
         }
     }
 
@@ -315,8 +318,7 @@ public class XNATPipelineLauncher implements Observer {
             try {
                 MailUtils.send("Pipeline Complete", "Pipeline: " + commandLineArgs.getPipelineFullPath() + " was successfully completed for " + ParameterUtils.GetParameters(params), commandLineArgs.getEmailIds(), null, null, commandLineArgs.getUserName(), commandLineArgs.getPassword());
             } catch (Exception e1) {
-                System.out.println("Couldn't send email msg");
-                e1.printStackTrace();
+                logger.error("Couldn't send email message", e1);
                 System.exit(1);
             }
         }
@@ -327,12 +329,11 @@ public class XNATPipelineLauncher implements Observer {
         try {
             properties.load(new FileInputStream(commandLineArgs.getConfigurationFile()));
         } catch (Exception e) {
-            System.out.println("Couldnt read the properties file " + commandLineArgs.getConfigurationFile() + "....aborting");
-            logger.fatal("Couldnt read the properties file " + commandLineArgs.getConfigurationFile() + "....aborting");
+            logger.fatal("Couldn't read the properties file " + commandLineArgs.getConfigurationFile() + "....aborting", e);
             System.exit(1);
         }
         if (properties.size() == 0) {
-            System.out.println("Configuration file " + commandLineArgs.getConfigurationFile() + " doesnt have any properties specified .... aborting");
+            logger.warn("Configuration file " + commandLineArgs.getConfigurationFile() + " doesn't have any properties specified .... aborting");
             System.exit(1);
         }
     }
@@ -344,50 +345,53 @@ public class XNATPipelineLauncher implements Observer {
     private void isPipelineQueuedOrAwaitingOrOnHold(String aliasHost) {
         Integer workFlowPrimaryKey = commandLineArgs.getWorkFlowPrimaryKey();
     	if (workFlowPrimaryKey!=null) {
-    		String uri =  "data/services/workflows/workflowid/" + workFlowPrimaryKey +"?concealHiddenFields=true";
+    		StringBuilder uri =  new StringBuilder("data/services/workflows/workflowid/");
+            uri.append(workFlowPrimaryKey);
+            final String concealHiddenFields = properties.getProperty(CONCEAL_HIDDEN_FIELDS);
+            if (!StringUtils.isBlank(concealHiddenFields)) {
+                uri.append("?concealHiddenFields=").append(Boolean.parseBoolean(concealHiddenFields));
+            }
     		ByteArrayOutputStream out = new ByteArrayOutputStream();
     		ByteArrayInputStream in = null;
     		try {
 	            WebServiceClient webClient = new WebServiceClient(aliasHost,commandLineArgs.getUserName(), commandLineArgs.getPassword());
-	           	webClient.connect(uri, out);
+	           	webClient.connect(uri.toString(), out);
 	            in = new ByteArrayInputStream(out.toByteArray());
 	            workFlow = (WorkflowDocument) new XmlReader().read(in);
                 workFlow.getWorkflow().setID(workFlowPrimaryKey.toString());
     		} catch (Exception e) {
-	            logger.fatal("Couldnt search for queued workflows", e);
+	            logger.fatal("Couldn't search for queued workflows", e);
 	        }finally {
 	        	try {
 	        		out.close(); if (in != null) in.close();
 	        	}catch(Exception e1){e1.printStackTrace();}
-	        	//try {
-                //	if (workFlow!=null) workFlow.save(new File(commandLineArgs.getId()+"_wrk.xml"));
-                //}catch(IOException ioe){ System.out.println(workFlow.toString());};
 	        }
         }else {
 	    	try {
 	            XMLSearch search = new XMLSearch(aliasHost, commandLineArgs.getUserName(), commandLineArgs.getPassword());
 	            ArrayList<String> files = search.searchAll("wrk:workflowData.ID", commandLineArgs.getId(), "=", "wrk:workflowData", FileUtils.getTempFolder());
-	            for (int i = 0; i < files.size(); i++) {
-	                WorkflowDocument wrkFlow = (WorkflowDocument) new XmlReader().read(files.get(i), true);
-	                if (wrkFlow.getWorkflow().getPipelineName().equals(commandLineArgs.getPipelineName())
-	                        && (wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("QUEUED") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("AWAITING ACTION") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("HOLD"))) {
-	                    workFlow = wrkFlow;
-	                    break;
-	                }
-	            }
+                for (String file : files) {
+                    WorkflowDocument wrkFlow = (WorkflowDocument) new XmlReader().read(file, true);
+                    if (wrkFlow.getWorkflow().getPipelineName().equals(commandLineArgs.getPipelineName())
+                            && (wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("QUEUED") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("AWAITING ACTION") || wrkFlow.getWorkflow().getStatus().equalsIgnoreCase("HOLD"))) {
+                        workFlow = wrkFlow;
+                        break;
+                    }
+                }
 	        } catch (Exception e) {
-	            logger.fatal("Couldnt search for queued workflows", e);
+	            logger.fatal("Couldn't search for queued workflows", e);
 	        }
         }
     }
 
     private static final Logger logger = Logger.getLogger(XNATPipelineLauncher.class);
+    private static final String FAILURE_EMAIL_INCLUDED_TAIL_LINES = "FAILURE_EMAIL_INCLUDED_TAIL_LINES";
+    private static final String CONCEAL_HIDDEN_FIELDS = "CONCEAL_HIDDEN_FIELDS";
+
     private WorkflowDocument workFlow = null;
     private XnatExecutionEnvironment execEnv = null;
     private Properties properties;
     private CommandLineArguments commandLineArgs;
     private String[] args;
-    final String RETRY_CONNECTION_AFTER_MILLISECONDS="RETRY_CONNECTION_AFTER_MILLISECONDS";
-    final String FAILURE_EMAIL_INCLUDED_TAIL_LINES="FAILURE_EMAIL_INCLUDED_TAIL_LINES";
 
 }
