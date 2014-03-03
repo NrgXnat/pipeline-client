@@ -33,7 +33,6 @@ import org.nrg.xnattools.SessionManager;
 import org.nrg.xnattools.service.WebServiceClient;
 import org.nrg.xnattools.xml.WorkflowStore;
 import org.nrg.xnattools.xml.XMLSearch;
-import org.nrg.xnattools.xml.XMLStore;
 
 public class XNATPipelineLauncher implements Observer {
 
@@ -66,8 +65,6 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     public Parameters launch() throws Exception {
-        setProperties();
-        PipelineProperties.init(properties);
         isPipelineQueuedOrAwaitingOrOnHold();
         EventManager.GetInstance().addObserver(this);
         Parameters params = PipelineManager.GetInstance(commandLineArgs.getConfigurationFile()).launchPipeline(commandLineArgs.getPipelineFullPath(), commandLineArgs.getParametersDocument(), commandLineArgs.getStartAt(), false);
@@ -201,9 +198,9 @@ public class XNATPipelineLauncher implements Observer {
     }
 
     public void composeFailureMessage(Exception e) {
-        String site = properties.getProperty("XNAT_SITE");
+        String site = getProperties().getProperty("XNAT_SITE");
         if (site == null) site = "XNAT";
-        String adminEmail = properties.getProperty("ADMIN_EMAIL");
+        String adminEmail = getProperties().getProperty("ADMIN_EMAIL");
         if (adminEmail == null) adminEmail = "Site Manager";
         String[] adminEmails = adminEmail.split(",");
         StringBuilder message = new StringBuilder("The following problems were encountered by the user(s) <br> ");
@@ -268,7 +265,7 @@ public class XNATPipelineLauncher implements Observer {
     	try {
     		int tail_lines = 40;
     		try {
-    			tail_lines = Integer.parseInt(properties.getProperty(FAILURE_EMAIL_INCLUDED_TAIL_LINES));
+    			tail_lines = Integer.parseInt(getProperties().getProperty(FAILURE_EMAIL_INCLUDED_TAIL_LINES));
     		}catch(Exception ignored) {}
 
     		if (filePath != null && !osName.toLowerCase().startsWith("windows")) {
@@ -325,18 +322,22 @@ public class XNATPipelineLauncher implements Observer {
         }
     }
 
-    private void setProperties() {
-        properties = new Properties();
-        try {
-            properties.load(new FileInputStream(commandLineArgs.getConfigurationFile()));
-        } catch (Exception e) {
-            logger.fatal("Couldn't read the properties file " + commandLineArgs.getConfigurationFile() + "....aborting", e);
-            System.exit(1);
+    private Properties getProperties() {
+        if (properties == null) {
+            properties = new Properties();
+            try {
+                properties.load(new FileInputStream(commandLineArgs.getConfigurationFile()));
+            } catch (Exception e) {
+                logger.fatal("Couldn't read the properties file " + commandLineArgs.getConfigurationFile() + "....aborting", e);
+                System.exit(1);
+            }
+            if (properties.size() == 0) {
+                logger.warn("Configuration file " + commandLineArgs.getConfigurationFile() + " doesn't have any properties specified .... aborting");
+                System.exit(1);
+            }
+            PipelineProperties.init(properties);
         }
-        if (properties.size() == 0) {
-            logger.warn("Configuration file " + commandLineArgs.getConfigurationFile() + " doesn't have any properties specified .... aborting");
-            System.exit(1);
-        }
+        return properties;
     }
 
     private void isPipelineQueuedOrAwaitingOrOnHold() {
@@ -348,7 +349,7 @@ public class XNATPipelineLauncher implements Observer {
     	if (workFlowPrimaryKey!=null) {
     		StringBuilder uri =  new StringBuilder("data/services/workflows/workflowid/");
             uri.append(workFlowPrimaryKey);
-            final String concealHiddenFields = properties.getProperty(CONCEAL_HIDDEN_FIELDS);
+            final String concealHiddenFields = getProperties().getProperty(CONCEAL_HIDDEN_FIELDS);
             if (!StringUtils.isBlank(concealHiddenFields)) {
                 uri.append("?concealHiddenFields=").append(Boolean.parseBoolean(concealHiddenFields));
             }
