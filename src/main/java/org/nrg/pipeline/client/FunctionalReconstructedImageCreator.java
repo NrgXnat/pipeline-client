@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -33,22 +33,18 @@ import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData;
 import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageDocument;
 import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData.Computations;
 import org.nrg.pipeline.xmlreader.XmlReader;
-import org.nrg.xnattools.xml.XMLStore;
 
 public class FunctionalReconstructedImageCreator extends ReconstructedImageCreator{
-    
+
     public FunctionalReconstructedImageCreator(String argv[]) {
         super(argv);
-        
+
     }
-    
+
     public void createReconstructedImage() throws Exception {
-        /*try {
-            setXNATUserNamePassword();
-        }catch(UserNameNotFoundException ue) {
-            throw new Exception("Couldnt proceed due to lack of username and password");
-        }*/
-        MRSessionDocument mrSession = getMrSessionFromHost();
+//Changed by MR on Dec 8, 2013 so that there is no need to download the MRSession
+//This way the pipeline can run on PETMR also.
+//        MRSessionDocument mrSession = getMrSessionFromHost();
         String pathToPipelineFile = commandLineArgs.get("pipelineXml");
         File xmlFile = new File(pathToPipelineFile);
         if (!xmlFile.exists()) {
@@ -78,7 +74,7 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
 	    DateFormat xmldateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	    Date now = Calendar.getInstance().getTime();
         String sessionId = commandLineArgs.get("xnatId");
-        
+
         String existingReconId =sessionId + "_" + commandLineArgs.get("type") + "_" +dateFormat.format(now) ;
 	    if (commandLineArgs.get("reconId") != null) {
 	    	existingReconId = commandLineArgs.get("reconId");
@@ -94,14 +90,14 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
             while (keys.hasMoreElements())
                 stepIds.add(keys.nextElement());
         }
-        addScanIds(pipelineDoc,recon, mrSession);
-        addOutputFiles(pipelineDoc,recon, mrSession);
-        setProvenance(pipelineDoc,recon,mrSession);
-        
+        addScanIds(pipelineDoc,recon);
+        addOutputFiles(pipelineDoc,recon);
+        setProvenance(pipelineDoc,recon);
+
         addQCData(recon);
-        
+
         reconDoc.save(new File(commandLineArgs.get("sessionId")+"_recon.xml"),new XmlOptions().setSavePrettyPrint());
-        
+
         /*try {
             new XMLStore(commandLineArgs.get("host"), commandLineArgs.get("username"), commandLineArgs.get("password")).store(reconDoc.xmlText(new XmlOptions().setSavePrettyPrint().setSaveAggressiveNamespaces()));
             System.out.println("Session stored");
@@ -111,7 +107,7 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
         } */
         System.out.println("Session stored");
     }
-    
+
     private void addQCData(ReconstructedImageData recon) {
         String qcdir = commandLineArgs.get("buildDir") + File.separator + commandLineArgs.get("sessionId") + File.separator + "QC";
   //      String qcAdir =  commandLineArgs.get("sessionId") + File.separator + "QC";
@@ -120,7 +116,7 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
     	if (!qcAdir.endsWith("/")) qcAdir += "/";
     	qcAdir =  commandLineArgs.get("sessionId") + File.separator + "QC";
         String sessionId = commandLineArgs.get("sessionId");
- 
+
         File dir = new File(qcdir);
         if (dir.exists()) {
             String[] children = dir.list();
@@ -142,19 +138,19 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
                                     datum.setValue(properties.getProperty(key));
                                 }
                             }
-                            
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             }
-            
+
         }
 
-        
+
     }
-    
+
     public static void main(String args[]) {
         try {
             FunctionalReconstructedImageCreator recon = new FunctionalReconstructedImageCreator(args);
@@ -170,5 +166,5 @@ public class FunctionalReconstructedImageCreator extends ReconstructedImageCreat
             System.exit(1);
         }
     }
-    
+
 }
