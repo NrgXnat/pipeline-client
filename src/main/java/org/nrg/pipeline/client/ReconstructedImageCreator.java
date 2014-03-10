@@ -1,7 +1,7 @@
-/* 
+/*
  *	Copyright Washington University in St Louis 2006
  *	All rights reserved
- * 	
+ *
  * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
 
 */
@@ -57,7 +57,7 @@ import org.nrg.xnattools.xml.MRXMLSearch;
 import org.nrg.xnattools.xml.XMLStore;
 
 public class ReconstructedImageCreator {
-    
+
     public ReconstructedImageCreator(String argv[]) {
         int c;
         commandLineArgs = new Hashtable<String,String>();
@@ -66,8 +66,8 @@ public class ReconstructedImageCreator {
         stepIndices = new Hashtable<String, ArrayList<Integer>>();
         LongOpt[] longopts = new LongOpt[16];
         longopts[0] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
-        longopts[1] = new LongOpt("sessionId", LongOpt.REQUIRED_ARGUMENT, null, 's'); 
-        longopts[2] = new LongOpt("xnatId", LongOpt.REQUIRED_ARGUMENT, null, 'i'); 
+        longopts[1] = new LongOpt("sessionId", LongOpt.REQUIRED_ARGUMENT, null, 's');
+        longopts[2] = new LongOpt("xnatId", LongOpt.REQUIRED_ARGUMENT, null, 'i');
         longopts[3] = new LongOpt("type", LongOpt.REQUIRED_ARGUMENT, null, 't');
         longopts[4] = new LongOpt("baseScanType", LongOpt.REQUIRED_ARGUMENT, null, 'b');
         longopts[5] = new LongOpt("scan", LongOpt.REQUIRED_ARGUMENT, null, 'c');
@@ -81,7 +81,7 @@ public class ReconstructedImageCreator {
         longopts[13] = new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'o');
         longopts[14] = new LongOpt("log", LongOpt.REQUIRED_ARGUMENT, null, 'l');
         longopts[15] = new LongOpt("reconId", LongOpt.REQUIRED_ARGUMENT, null, 'r');
-        
+
         Getopt g = new Getopt("ReconstructedImageCreator", argv, "s:i:t:b:c:n:f:x:u:w:d:a:o:l:r:h;", longopts, true);
         g.setOpterr(false); // We'll do our own error handling
         //
@@ -167,7 +167,7 @@ public class ReconstructedImageCreator {
             System.exit(1);
         }
     }
-    
+
    /* private void setXNATUserNamePassword() throws UserNameNotFoundException {
         if (commandLineArgs.get("username")==null || commandLineArgs.get("password") == null) {
             XNATPassFileParser xnatPassFileParser = new XNATPassFileParser();
@@ -179,13 +179,14 @@ public class ReconstructedImageCreator {
             }
         }
     }*/
-    
+
     protected MRSessionDocument getMrSessionFromHost() throws Exception {
         SessionManager.GetInstance(commandLineArgs.get("host"),commandLineArgs.get("username"), commandLineArgs.get("password"));
     	MRSessionDocument mrSession = new MRXMLSearch(commandLineArgs.get("host"), commandLineArgs.get("username"), commandLineArgs.get("password")).getMrSessionFromHost(commandLineArgs.get("xnatId"), false);
         return mrSession;
    }
-    
+
+
     public void createReconstructedImage() throws Exception {
         /*try {
             setXNATUserNamePassword();
@@ -222,7 +223,7 @@ public class ReconstructedImageCreator {
 	    DateFormat xmldateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	    Date now = Calendar.getInstance().getTime();
         String existingReconId =sessionId + "_" + commandLineArgs.get("type") + "_" +dateFormat.format(now) ;
-        
+
 	    if (commandLineArgs.get("reconId") != null) {
 	    	existingReconId = commandLineArgs.get("reconId");
 	    }
@@ -239,19 +240,19 @@ public class ReconstructedImageCreator {
         addScanIds(pipelineDoc,recon, mrSession);
         addOutputFiles(pipelineDoc,recon, mrSession);
         setProvenance(pipelineDoc,recon,mrSession);
-        
+
         try {
             new XMLStore(commandLineArgs.get("host"), commandLineArgs.get("username"), commandLineArgs.get("password")).store(reconDoc.xmlText(new XmlOptions().setSavePrettyPrint().setSaveAggressiveNamespaces()));
             System.out.println("Session stored");
         }catch(Exception e){
             recon.save(new File(commandLineArgs.get("sessionId")),new XmlOptions().setSavePrettyPrint());
             e.printStackTrace();
-        } 
+        }
     }
-    
-    
-    
- 
+
+
+
+
     private String getPath(String pipelinePath, String relativePath) {
         String rtn = pipelinePath;
         String sessionId = commandLineArgs.get("sessionId");
@@ -261,14 +262,14 @@ public class ReconstructedImageCreator {
         }
         return rtn;
     }
-    
+
     protected void addOutputFiles(AllResolvedStepsDocument pipelineDoc,ReconstructedImageData recon, MRSessionDocument mrSession) throws PipelineException {
     	//Changed by MR on June 14, 2010 to contain the ArchiveDir absolute path in the Session documents
     	//    String relativePath = FileUtils.getRelativePath(mrSession);
     	String relativePath = commandLineArgs.get("archiveDir");
     	if (!relativePath.endsWith("/")) relativePath += "/";
         String sessionId = commandLineArgs.get("sessionId");
-        
+
         for (String stepId : stepIds) {
             System.out.println("Step ID " + stepId);
             ArrayList <Integer> indices = new ArrayList<Integer>();
@@ -321,7 +322,7 @@ public class ReconstructedImageCreator {
                                         if (file.isSetContent()) rsc.setContent(file.getContent());
                                         if (file.isSetDescription()) rsc.setDescription(file.getDescription());
                                         Dimensions dim = ImageResource.Dimensions.Factory.newInstance();
-                                        dim.setX(new java.math.BigInteger(Integer.toString(fi.width))); 
+                                        dim.setX(new java.math.BigInteger(Integer.toString(fi.width)));
                                         dim.setY(new java.math.BigInteger(Integer.toString(fi.height)));
                                         dim.setZ(new java.math.BigInteger(Integer.toString(fi.nImages)));
                                         dim.setVolumes(new java.math.BigInteger(Integer.toString(pihr.getVolumes())));
@@ -350,15 +351,108 @@ public class ReconstructedImageCreator {
             }else {
             	System.out.println("Couldnt find any Resolved Steps for the Step Ids");
             }
-        }        
+        }
     }
-    
+
+
+    protected void addOutputFiles(AllResolvedStepsDocument pipelineDoc,ReconstructedImageData recon) throws PipelineException {
+    	//Changed by MR on June 14, 2010 to contain the ArchiveDir absolute path in the Session documents
+    	//    String relativePath = FileUtils.getRelativePath(mrSession);
+    	String relativePath = commandLineArgs.get("archiveDir");
+    	if (!relativePath.endsWith("/")) relativePath += "/";
+        String sessionId = commandLineArgs.get("sessionId");
+
+        for (String stepId : stepIds) {
+            System.out.println("Step ID " + stepId);
+            ArrayList <Integer> indices = new ArrayList<Integer>();
+            if (stepIndices.containsKey(stepId)) {
+                indices = stepIndices.get(stepId);
+            }else {
+                indices = XMLBeansUtils.getStepIndicesById(pipelineDoc,stepId);
+                stepIndices.put(stepId,indices);
+            }
+            System.out.println("Indices are " + indices);
+            if (indices != null && indices.size() > 0) {
+                for (int i = 0; i < indices.size(); i++) {
+                    ResolvedStep rStep = pipelineDoc.getAllResolvedSteps().getResolvedStepArray((Integer)indices.get(i).intValue());
+                    Out reconOut = null;
+                    if (recon.isSetOut()) {
+                        reconOut = recon.getOut();
+                    }
+                    if (rStep.sizeOfResolvedOutputArray() > 0) {
+                        for (ResolvedOutput output : rStep.getResolvedOutputArray()) {
+                            if (output.isSetFile() && output.getFile().isSetName()) {
+                                XmlObject absRsc = null;
+                                OutputData.File file = output.getFile();
+                                String xsiType = file.getXsiType();
+                                //if (commandLineArgs.containsKey("buildDir") && commandLineArgs.containsKey("archiveDir"))
+                                //    file.getPath().setStringValue(StringUtils.replace(file.getPath().getStringValue(),(String)commandLineArgs.get("buildDir"),(String)commandLineArgs.get("archiveDir")));
+                                if (!FileUtils.exists(file.getPath().getStringValue() + File.separator + file.getName())) {
+                                    System.out.println("Couldnt find file " + file.getPath().getStringValue() + File.separator + file.getName());
+                                    continue;
+                                }
+                                if (!file.isSetFormat()) {
+                                    System.out.println("Missing format for file " + file.getPath().getStringValue() + File.separator + file.getName());
+                                    continue;
+                                }
+                                if (xsiType.equals("xnat:imageResource")) {
+                                    PlexiImageHeaderReader pihr = null;
+                                    FileInfo fi  = null;
+                                    try {
+                                        pihr = new PlexiImageHeaderReader(file.getFormat());
+                                       fi = pihr.getFileInfo(file.getPath().getStringValue(), file.getName());
+                                    }catch(IOException ioe) {
+                                        throw new PipelineException("Couldnt find file file:///" + file.getPath().getStringValue() + "/" + file.getName());
+                                    }
+                                    if (fi != null) {
+                                        if (reconOut == null)
+                                            reconOut = recon.addNewOut();
+                                        absRsc = reconOut.addNewFile();
+                                        ImageResource rsc = (ImageResource)absRsc.changeType(ImageResource.type);
+                                        rsc.setURI(FileUtils.getPath(file.getPath().getStringValue(),relativePath,sessionId) + File.separator + file.getName());
+                                        rsc.setFormat(file.getFormat());
+                                        if (file.isSetContent()) rsc.setContent(file.getContent());
+                                        if (file.isSetDescription()) rsc.setDescription(file.getDescription());
+                                        Dimensions dim = ImageResource.Dimensions.Factory.newInstance();
+                                        dim.setX(new java.math.BigInteger(Integer.toString(fi.width)));
+                                        dim.setY(new java.math.BigInteger(Integer.toString(fi.height)));
+                                        dim.setZ(new java.math.BigInteger(Integer.toString(fi.nImages)));
+                                        dim.setVolumes(new java.math.BigInteger(Integer.toString(pihr.getVolumes())));
+                                        rsc.setDimensions(dim);
+                                        VoxelRes voxelRes = ImageResource.VoxelRes.Factory.newInstance();
+                                        voxelRes.setX((float)fi.pixelWidth);
+                                        voxelRes.setY((float)fi.pixelHeight);
+                                        voxelRes.setZ((float)fi.pixelDepth);
+                                        rsc.setVoxelRes(voxelRes);
+                                        rsc.setOrientation(pihr.getOrientation());
+                                    }else {throw new PipelineException("Couldnt get image file parameters for file " + file.getPath().getStringValue() + File.separator + file.getName());}
+                                }else  if (xsiType.equals("xnat:resource")) {
+                                    if (reconOut == null)
+                                        reconOut = recon.addNewOut();
+                                    absRsc = reconOut.addNewFile();
+                                    Resource rsc = (Resource)absRsc.changeType(Resource.type);
+                                    rsc.setURI(FileUtils.getPath(file.getPath().getStringValue(),relativePath,sessionId) + File.separator + file.getName()) ;
+                                    rsc.setFormat(file.getFormat());
+                                    if (file.isSetContent()) rsc.setContent(file.getContent());
+                                    if (file.isSetDescription()) rsc.setDescription(file.getDescription());
+                                }
+                            }
+                        }
+                    }
+                }
+            }else {
+            	System.out.println("Couldnt find any Resolved Steps for the Step Ids");
+            }
+        }
+    }
+
+
     protected void setProvenance(AllResolvedStepsDocument pipelineDoc,ReconstructedImageData recon, MRSessionDocument mrSession) {
         for (String stepId : stepIds) {
             ArrayList indices = null;
             if (stepIndices.get(stepId) != null) {
                 indices = stepIndices.get(stepId);
-            }else 
+            }else
                 indices = XMLBeansUtils.getStepIndicesById(pipelineDoc,stepId);
             if (indices != null && indices.size() > 0) {
                 net.nbirn.prov.Process reconProv = recon.getProvenance();
@@ -375,9 +469,36 @@ public class ReconstructedImageCreator {
                 }
             }
         }
-        
+
     }
-    
+
+
+    protected void setProvenance(AllResolvedStepsDocument pipelineDoc,ReconstructedImageData recon) {
+        for (String stepId : stepIds) {
+            ArrayList indices = null;
+            if (stepIndices.get(stepId) != null) {
+                indices = stepIndices.get(stepId);
+            }else
+                indices = XMLBeansUtils.getStepIndicesById(pipelineDoc,stepId);
+            if (indices != null && indices.size() > 0) {
+                net.nbirn.prov.Process reconProv = recon.getProvenance();
+                if (!recon.isSetProvenance())
+                    reconProv = recon.addNewProvenance();
+                for (int i = 0; i < indices.size(); i++) {
+                    Provenance prov = pipelineDoc.getAllResolvedSteps().getResolvedStepArray(((Integer)indices.get(i)).intValue()).getProvenance();
+                    if (prov!=null) {
+                        for (int j = 0; j < prov.sizeOfProcessStepArray(); j++) {
+                            reconProv.addNewProcessStep();
+                            reconProv.setProcessStepArray(reconProv.sizeOfProcessStepArray()-1, prov.getProcessStepArray(j));
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
     protected void addScanIds(AllResolvedStepsDocument pipelineDoc,ReconstructedImageData recon, MRSessionDocument mrSession) {
         ArrayList<String> scanIds = new ArrayList<String>();
         if (inScanIds != null && inScanIds.size() > 0) {
@@ -402,7 +523,31 @@ public class ReconstructedImageCreator {
             }
         }
     }
-    
+
+    protected void addScanIds(AllResolvedStepsDocument pipelineDoc,ReconstructedImageData recon) {
+        ArrayList<String> scanIds = new ArrayList<String>();
+        if (inScanIds != null && inScanIds.size() > 0) {
+            for (String scanId : inScanIds) {
+                scanIds.add(scanId);
+            }
+        }else if (commandLineArgs.containsKey("scanParameterName")) {
+          ParameterData param =  XMLBeansUtils.getParameterByName(pipelineDoc,commandLineArgs.get("scanParameterName"));
+          if (param.getValues().isSetUnique()) {
+              scanIds.add(param.getValues().getUnique());
+          }else {
+              for (String scanId : param.getValues().getListArray() ) {
+                  scanIds.add(scanId);
+              }
+          }
+        }
+        InScans inScans = recon.addNewInScans();
+        for (String scanId : scanIds) {
+            inScans.addScanID(scanId);
+            //addScanFile(recon,scanId,mrSession);
+        }
+    }
+
+
     private boolean validScanIds(ArrayList<String> scanIds, MRSessionDocument mrSession) {
         boolean rtn = false;
         for (String scanId : scanIds) {
@@ -415,7 +560,7 @@ public class ReconstructedImageCreator {
         }
         return rtn;
     }
-    
+
     private void addScanFile(ReconstructedImageData recon, String scanId, MRSessionDocument mrSession) {
         MrScanData scanById = null;
         for (ImageScanData scan : mrSession.getMRSession().getScans().getScanArray()) {
@@ -438,8 +583,8 @@ public class ReconstructedImageCreator {
             }
         }
     }
-    
-     
+
+
     public void printUsage() {
         String usage = "ReconstructedImageCreator  \n";
         usage += "Options:\n";
@@ -464,12 +609,12 @@ public class ReconstructedImageCreator {
         System.out.println(usage);
         System.exit(1);
     }
-    
+
     public String getLogPropertiesFile() {
         return (String)commandLineArgs.get("log");
     }
 
-    
+
     public static void main(String args[]) {
         try {
             ReconstructedImageCreator recon = new ReconstructedImageCreator(args);
@@ -485,8 +630,8 @@ public class ReconstructedImageCreator {
             System.exit(1);
         }
     }
-    
-    Hashtable<String,ArrayList<Integer>> stepIndices; 
+
+    Hashtable<String,ArrayList<Integer>> stepIndices;
     protected Hashtable<String,String> commandLineArgs;
     ArrayList<String> inScanIds;
     ArrayList<String> stepIds;
