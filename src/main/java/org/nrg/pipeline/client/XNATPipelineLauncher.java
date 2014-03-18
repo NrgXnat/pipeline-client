@@ -360,7 +360,6 @@ public class XNATPipelineLauncher implements Observer {
 	           	webClient.connect(uri.toString(), out);
 	            in = new ByteArrayInputStream(out.toByteArray());
 	            workFlow = (WorkflowDocument) new XmlReader().read(in);
-                workFlow.getWorkflow().setID(workFlowPrimaryKey.toString());
     		} catch (Exception e) {
 	            logger.fatal("Couldn't search for queued workflows", e);
 	        }finally {
