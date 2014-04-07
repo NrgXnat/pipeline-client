@@ -197,7 +197,7 @@ public class XNATPipelineLauncher implements Observer {
         logger.info("====================================\n");
     }
 
-    public void composeFailureMessage(Exception e) {
+    public void composeFailureMessage(Throwable e) {
         String site = getProperties().getProperty("XNAT_SITE");
         if (site == null) site = "XNAT";
         String adminEmail = getProperties().getProperty("ADMIN_EMAIL");
@@ -272,10 +272,12 @@ public class XNATPipelineLauncher implements Observer {
 				CommandStatementPresenter command   = new CommandStatementPresenter("tail -n" + tail_lines + " " + filePath);
 				LocalProcessLauncher launcher = new LocalProcessLauncher(null,null);
 		        launcher.launchProcess(command,null, 1000);
-		        if (launcher.getStreamOutput() != null)
-		           rtn = launcher.getStreamOutput();
-		        if (rtn == null && launcher.getStreamErrOutput() != null)
-		           rtn = launcher.getStreamErrOutput();
+		        if (launcher.getStreamOutput() != null) {
+                    rtn = launcher.getStreamOutput();
+                }
+		        if (launcher.getStreamErrOutput() != null) {
+                    rtn = launcher.getStreamErrOutput();
+                }
 		        return rtn;
     		}
     	}catch(Exception e) {
@@ -290,19 +292,19 @@ public class XNATPipelineLauncher implements Observer {
             Parameters params = launch();
             success(params);
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             fail(e);
             return false;
-        }finally {
+        } finally {
             try {
             	SessionManager.GetInstance().deleteJSESSION();
-            }catch(Exception e) {
+            } catch(Exception e) {
             	e.printStackTrace();
             }
         }
     }
 
-    private void fail(Exception e) {
+    private void fail(Throwable e) {
         logger.error("Unable to launch pipeline " + commandLineArgs.getPipelineFullPath(), e);
         try {
             composeFailureMessage(e);
