@@ -1,12 +1,5 @@
 package org.nrg.pipeline.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -16,12 +9,7 @@ import org.nrg.pipeline.exception.PipelineEngineException;
 import org.nrg.pipeline.manager.EventManager;
 import org.nrg.pipeline.manager.PipelineManager;
 import org.nrg.pipeline.process.LocalProcessLauncher;
-import org.nrg.pipeline.utils.CommandStatementPresenter;
-import org.nrg.pipeline.utils.ExceptionUtils;
-import org.nrg.pipeline.utils.MailUtils;
-import org.nrg.pipeline.utils.Notification;
-import org.nrg.pipeline.utils.ParameterUtils;
-import org.nrg.pipeline.utils.PipelineProperties;
+import org.nrg.pipeline.utils.*;
 import org.nrg.pipeline.xmlbeans.ParameterData;
 import org.nrg.pipeline.xmlbeans.PipelineData.Parameters;
 import org.nrg.pipeline.xmlbeans.workflow.AbstractExecutionEnvironment;
@@ -34,8 +22,12 @@ import org.nrg.xnattools.service.WebServiceClient;
 import org.nrg.xnattools.xml.WorkflowStore;
 import org.nrg.xnattools.xml.XMLSearch;
 
+import java.io.*;
+import java.util.*;
+
 public class XNATPipelineLauncher implements Observer {
 
+    @SuppressWarnings("unused")
     public XNATPipelineLauncher(List<String> args) {
         this(args.toArray(new String[args.size()]));
     }
@@ -136,24 +128,33 @@ public class XNATPipelineLauncher implements Observer {
         Notification notification = (Notification) msg;
         WorkflowDocument wrkFlow = WorkflowDocument.Factory.newInstance();
         WorkflowData workFlowData = wrkFlow.addNewWorkflow();
+
         if (workFlow != null) {
             workFlowData.set(workFlow.getWorkflow());
         } else {
             workFlowData.setLaunchTime(notification.getPipelineTimeLaunched());
         }
 
-            workFlowData.setDataType(commandLineArgs.getDataType());
-            workFlowData.setID(commandLineArgs.getId());
-        workFlowData.setExternalID(commandLineArgs.getProject());
-
-        if (notification.getStepTimeLaunched() != null) workFlowData.setCurrentStepLaunchTime(notification.getStepTimeLaunched());
-        if (notification.getCurrentStep() != null) workFlowData.setCurrentStepId(notification.getCurrentStep());
-        if (notification.getStatus() != null) workFlowData.setStatus(notification.getStatus());
         workFlowData.setPipelineName(commandLineArgs.getPipelineName());
-        if (notification.getNextStep() != null) workFlowData.setNextStepId(notification.getNextStep());
+        workFlowData.setDataType(commandLineArgs.getDataType());
+        workFlowData.setID(commandLineArgs.getId());
+        workFlowData.setExternalID(commandLineArgs.getProject());
         workFlowData.setStepDescription(notification.getMessage());
         workFlowData.setPercentageComplete("" + notification.getPercentageStepsCompleted());
-        if (workFlowData != null && !workFlowData.isSetExecutionEnvironment()) {
+
+        if (notification.getStepTimeLaunched() != null) {
+            workFlowData.setCurrentStepLaunchTime(notification.getStepTimeLaunched());
+        }
+        if (notification.getCurrentStep() != null) {
+            workFlowData.setCurrentStepId(notification.getCurrentStep());
+        }
+        if (notification.getStatus() != null) {
+            workFlowData.setStatus(notification.getStatus());
+        }
+        if (notification.getNextStep() != null) {
+            workFlowData.setNextStepId(notification.getNextStep());
+        }
+        if (!workFlowData.isSetExecutionEnvironment()) {
             AbstractExecutionEnvironment absExec = workFlowData.addNewExecutionEnvironment();
             XnatExecutionEnvironment aexecEnv = (XnatExecutionEnvironment) absExec.changeType(XnatExecutionEnvironment.type);
             aexecEnv.set(execEnv);
@@ -236,7 +237,7 @@ public class XNATPipelineLauncher implements Observer {
 
         try {
             if (!commandLineArgs.notifyOnlyAdmin()) {
-                MailUtils.send(site + " update: Processing failed for " + label, message.toString(), commandLineArgs.getEmailIds(), outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
+                MailUtils.send(site + " update: Processing failed for " + label, message.toString(), notifyEmails, outfilepath, errorfilepath, commandLineArgs.getUserName(), commandLineArgs.getPassword());
             }
             message.append("<br><br><br> Pipeline:  <br><br>").append(commandLineArgs.getPipelineFullPath());
             message.append("<br><br><br> Cause:  <br><br>").append(ExceptionUtils.getStackTrace(e, null));
