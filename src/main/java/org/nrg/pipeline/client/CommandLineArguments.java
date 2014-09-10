@@ -11,6 +11,7 @@ package org.nrg.pipeline.client;
 import com.Ostermiller.util.CSVParser;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
+import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.nrg.pipeline.utils.MailUtils;
@@ -72,6 +73,7 @@ public class CommandLineArguments extends AbsVersion {
 
 
     public CommandLineArguments(String argv[]) {
+        args = argv;
         int c;
         commandLineArgs = new Hashtable<String, Object>();
         execEnv = XnatExecutionEnvironment.Factory.newInstance();
@@ -438,7 +440,27 @@ public class CommandLineArguments extends AbsVersion {
         return (String)commandLineArgs.get("log");
     }
 
-
+    public void logCommandLineArguments() {
+        if (args == null || args.length == 0) {
+            logger.debug("No command-line arguments found.");
+            return;
+        }
+        final StringBuilder output = new StringBuilder("Pipeline executed with command line: ");
+        boolean isPassword = false;
+        for (final String arg : args) {
+            if (arg.equals("-pwd") || arg.equals("-w")) {
+                isPassword = true;
+                output.append(arg);
+            } else if (isPassword) {
+                output.append("XXXXXXXXX");
+                isPassword = false;
+            } else {
+                output.append(arg);
+            }
+            output.append(" ");
+        }
+        logger.debug(output.toString().trim());
+    }
 
     private void addParameter(String paramValuePair, boolean sensitive) {
         //expected to get <name>=<csv value>
@@ -543,7 +565,10 @@ public class CommandLineArguments extends AbsVersion {
         }
     }
 
+    private static final Logger logger = Logger.getLogger(CommandLineArguments.class);
+
     //boolean isRecon = false;
+    private String[] args;
     private XnatExecutionEnvironment execEnv;
     private Map<String, Object> commandLineArgs;
     private Parameters params;

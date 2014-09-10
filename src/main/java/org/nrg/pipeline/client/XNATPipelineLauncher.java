@@ -54,6 +54,7 @@ public class XNATPipelineLauncher implements Observer {
         }
         //Acquire a JSESSION and this will be used throughout the execution of the pipeline
         SessionManager.GetInstance(commandLineArgs.getHost(), commandLineArgs.getUserName(), commandLineArgs.getPassword());
+        commandLineArgs.logCommandLineArguments();
     }
 
     public Parameters launch() throws Exception {
