@@ -6,7 +6,6 @@
         <groupId>org.nrg</groupId>
         <artifactId>nrg</artifactId>
         <version>1.6.4-SNAPSHOT</version>
-        <relativePath>../nrg/pom.xml</relativePath>
     </parent>
 
     <groupId>org.nrg.xnat.pipeline</groupId>
