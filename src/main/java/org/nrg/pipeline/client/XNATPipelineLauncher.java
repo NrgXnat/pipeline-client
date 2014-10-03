@@ -228,12 +228,16 @@ public class XNATPipelineLauncher implements Observer {
         if (outfilepath != null) {
         	String tailLines = getLastLines(outfilepath);
         	tailLines = tailLines.replace("\n", "<br>");
-        	message.append("<br><br><br> TAIL ").append(outfilepath).append("<br><br> ").append(tailLines).append(" <br><br>");
+            if (tailLines.length() > 0) {
+        	    message.append("<br><br><br> TAIL ").append(outfilepath).append("<br><br> ").append(tailLines).append(" <br><br>");
+            }
         }
         if (errorfilepath != null) {
         	String tailLines = getLastLines(errorfilepath);
         	tailLines = tailLines.replace("\n", "<br>");
-        	message.append("<br><br><br> TAIL ").append(errorfilepath).append("<br><br> ").append(tailLines).append(" <br><br>");
+            if (tailLines.length() > 0) {
+        	    message.append("<br><br><br> TAIL ").append(errorfilepath).append("<br><br> ").append(tailLines).append(" <br><br>");
+            }
         }
 
         try {
@@ -277,7 +281,7 @@ public class XNATPipelineLauncher implements Observer {
 		        if (launcher.getStreamOutput() != null) {
                     rtn = launcher.getStreamOutput();
                 }
-		        if (launcher.getStreamErrOutput() != null) {
+		        if (rtn.equals("") && launcher.getStreamErrOutput() != null) {
                     rtn = launcher.getStreamErrOutput();
                 }
 		        return rtn;
