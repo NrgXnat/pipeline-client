@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.nrg</groupId>
         <artifactId>nrg</artifactId>
-        <version>1.6.4-SNAPSHOT</version>
-    </parent>
+		<version>1.6.5-SNAPSHOT</version>
+        </parent>
 
     <groupId>org.nrg.xnat.pipeline</groupId>
     <artifactId>client</artifactId>
@@ -76,8 +76,8 @@
             <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>imagej</groupId>
-            <artifactId>imagej</artifactId>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
         </dependency>
 
         <!-- External dependencies -->
