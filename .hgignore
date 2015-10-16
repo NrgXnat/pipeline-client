@@ -1,0 +1,10 @@
+syntax: glob
+target
+*.log
+
+syntax: regexp
+^\.project$
+^\.classpath$
+^\.settings$
+^.*\.[ei]ml$
+^.*_wrk\.xml$
