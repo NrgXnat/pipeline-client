@@ -58,11 +58,6 @@
             <artifactId>pipelineCNDAXNAT</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.nrg</groupId>
-            <artifactId>Pipeline</artifactId>
-            <version>1.0</version>
-        </dependency>
 
         <!-- NRG-hosted external libraries. If these don't resolve, check the repository settings. -->
         <dependency>
