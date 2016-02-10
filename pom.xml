@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>org.nrg</groupId>
-        <artifactId>nrg</artifactId>
+        <artifactId>parent</artifactId>
         <version>1.7.0-SNAPSHOT</version>
     </parent>
 
@@ -91,17 +91,12 @@
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
+            <artifactId>javax.mail-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>0.1.44-1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml</groupId>
-            <artifactId>jsr173</artifactId>
-            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -131,32 +126,12 @@
             <version>1.07.00</version>
         </dependency>
         <dependency>
-            <groupId>xml-resolver</groupId>
-            <artifactId>xml-resolver</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>Saxon-B</artifactId>
-            <version>9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <version>2.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.9.1</version>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans-xpath</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans-xmlpublic</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
