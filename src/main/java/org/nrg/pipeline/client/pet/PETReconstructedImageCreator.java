@@ -58,7 +58,7 @@ import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData.In;
 import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData.InScans;
 import org.nrg.pipeline.xmlbeans.xnat.ReconstructedImageData.Out;
 import org.nrg.pipeline.xmlreader.XmlReader;
-import org.nrg.plexiViewer.Reader.PlexiImageHeaderReader;
+import org.nrg.xnat.plexiviewer.reader.PlexiImageHeaderReader;
 import org.nrg.xnattools.XNATPassFileParser;
 import org.nrg.xnattools.exception.UserNameNotFoundException;
 import org.nrg.xnattools.xml.XMLSearch;
