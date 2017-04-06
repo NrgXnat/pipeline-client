@@ -5,3 +5,6 @@
 .settings
 *.log
 target
+gradle/
+.gradle/
+build
