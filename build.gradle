@@ -16,7 +16,6 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
-    mavenLocal()
     jcenter()
     maven {
         url 'https://nrgxnat.artifactoryonline.com/nrgxnat/libs-release'
