@@ -1,10 +1,10 @@
-.idea
 *.iml
-.project
-.classpath
-.settings
 *.log
-target
-gradle/
+.classpath
 .gradle/
+.idea
+.project
+.settings
 build
+dep*.txt
+target
