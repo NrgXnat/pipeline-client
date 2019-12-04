@@ -8,7 +8,7 @@ plugins {
 }
 
 group "org.nrg.xnat.pipeline"
-version "1.7.6-SNAPSHOT"
+version "1.7.6"
 
 description = "XNAT Pipeline Client"
 
@@ -124,7 +124,7 @@ publishing {
                 root.appendNode("name", "XNAT Pipeline")
                 root.appendNode("description", "")
                 root.appendNode("url", "https://github.com/nrgxnat/pipeline-client")
-                root.appendNode("inceptionYear", "2016")
+                root.appendNode("inceptionYear", "2019")
 
                 def scm = root.appendNode("scm")
                 scm.appendNode("url", "https://bitbucket.org/xnatdev/plexiviewer")
