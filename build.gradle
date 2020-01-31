@@ -4,11 +4,11 @@ plugins {
     id "maven-publish"
     id "idea"
     id "eclipse"
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
 }
 
 group "org.nrg.xnat.pipeline"
-version "1.7.6"
+version "1.7.7-SNAPSHOT"
 
 description = "XNAT Pipeline Client"
 
@@ -19,22 +19,9 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    maven {
-        url "http://www.dcm4che.org/maven2"
-        name "dcm4che Maven Repository"
-    }
-    maven {
-        url "https://nrgxnat.artifactoryonline.com/nrgxnat/libs-release"
-        name "XNAT Release Repository"
-    }
-    maven {
-        url "https://nrgxnat.artifactoryonline.com/nrgxnat/libs-snapshot"
-        name "XNAT Snapshot Repository"
-    }
-    maven {
-        url "https://nrgxnat.artifactoryonline.com/nrgxnat/ext-release"
-        name "XNAT External Release Repository"
-    }
+    maven { url "https://www.dcm4che.org/maven2" }
+    maven { url "https://nrgxnat.jfrog.io/nrgxnat/libs-release" }
+    maven { url "https://nrgxnat.jfrog.io/nrgxnat/libs-snapshot" }
 }
 
 dependencyManagement.imports {
