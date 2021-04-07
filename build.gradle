@@ -6,10 +6,11 @@ plugins {
     id "idea"
     id "eclipse"
     id "io.spring.dependency-management" version "1.0.9.RELEASE"
+    id "net.linguica.maven-settings" version "0.5"
 }
 
 group "org.nrg.xnat.pipeline"
-version "1.8.0"
+version "1.8.1"
 
 description = "XNAT Pipeline Client"
 
@@ -154,17 +155,13 @@ publishing {
     }
     repositories {
         maven {
-            credentials {
-                // These properties must be set in the ~/.gradle/gradle.properties file or passed on the Gradle command
-                // line in the form -PrepoUsername=foo -PrepoPassword=bar.
-                username propertyWithDefault("repoUsername", "username")
-                password propertyWithDefault("repoPassword", "password")
-            }
             if (project.version.endsWith("-SNAPSHOT")) {
                 url "https://nrgxnat.jfrog.io/nrgxnat/libs-snapshot-local"
             } else {
                 url "https://nrgxnat.jfrog.io/nrgxnat/libs-release-local"
             }
+            // The value for name must match <id> in ~/.m2/settings.xml
+            name = "XNAT_Artifactory"
         }
     }
 }
