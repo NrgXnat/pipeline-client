@@ -10,7 +10,7 @@ plugins {
 }
 
 group "org.nrg.xnat.pipeline"
-version "1.8.1"
+version "1.8.2"
 
 description = "XNAT Pipeline Client"
 
